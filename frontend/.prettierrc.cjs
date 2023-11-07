@@ -13,4 +13,9 @@ module.exports = {
   proseWrap: 'always',
   htmlWhitespaceSensitivity: 'ignore',
   endOfLine: 'lf',
+  "prettier/prettier": 
+  [ "error",
+    {
+      "endOfLine": "auto"}
+  ]
 };
