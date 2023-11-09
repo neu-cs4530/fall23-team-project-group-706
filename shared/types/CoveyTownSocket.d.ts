@@ -17,7 +17,7 @@ export type TownJoinResponse = {
   interactables: TypedInteractable[];
 }
 
-export type InteractableType = 'ConversationArea' | 'ViewingArea' | 'TicTacToeArea';
+export type InteractableType = 'ConversationArea' | 'ViewingArea' | 'TicTacToeArea' | 'MusicArea';
 export interface Interactable {
   type: InteractableType;
   id: InteractableID;
@@ -72,6 +72,9 @@ export interface ViewingArea extends Interactable {
   isPlaying: boolean;
   elapsedTimeSec: number;
 }
+
+export interface MusicArea extends Interactable {
+};
 
 export type GameStatus = 'IN_PROGRESS' | 'WAITING_TO_START' | 'OVER';
 /**

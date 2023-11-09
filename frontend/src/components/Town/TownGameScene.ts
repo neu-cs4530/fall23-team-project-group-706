@@ -7,6 +7,7 @@ import { Callback } from '../VideoCall/VideoFrontend/types';
 import Interactable from './Interactable';
 import ConversationArea from './interactables/ConversationArea';
 import GameArea from './interactables/GameArea';
+import MusicArea from './interactables/MusicArea';
 import Transporter from './interactables/Transporter';
 import ViewingArea from './interactables/ViewingArea';
 
@@ -21,6 +22,8 @@ function interactableTypeForObjectType(type: string): any {
     return ViewingArea;
   } else if (type === 'GameArea') {
     return GameArea;
+  } else if (type === 'MusicArea') {
+    return MusicArea;
   } else {
     throw new Error(`Unknown object type: ${type}`);
   }
@@ -95,6 +98,7 @@ export default class TownGameScene extends Phaser.Scene {
   }
 
   preload() {
+    this.load.image('jukebox', 'path/to/jukebox_32x48.png');
     this.load.image(
       'Room_Builder_32x32',
       this._resourcePathPrefix + '/assets/tilesets/Room_Builder_32x32.png',
@@ -319,6 +323,7 @@ export default class TownGameScene extends Phaser.Scene {
   create() {
     this._map = this.make.tilemap({ key: 'map' });
 
+    console.log(this._map);
     /* Parameters are the name you gave the tileset in Tiled and then the key of the
          tileset image in Phaser's cache (i.e. the name you used in preload)
          */
