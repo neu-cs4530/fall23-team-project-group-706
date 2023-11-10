@@ -68,6 +68,50 @@ export default abstract class MusicAreaController<
     // }
   }
 
+  /**
+   * 
+   * Allows a user to pause any music in the current music session in the game area.
+   */
+  public async pauseMusic() {
+    
+  }
+  /**
+   * 
+   * Allows a user to play any music in the current music session in the game area.
+   */
+
+  public async playMusic() {
+
+
+  }
+
+  /**
+   * 
+   * Allows a user to skip any music in the current music session in the game area.
+   */
+
+  public async skipForward() {
+
+
+  }
+/**
+   * 
+   * Allows a user to skip back to any music in the current music session in the game area.
+   */
+
+  public async skipBackward() {
+
+
+  }
+  /**
+   * 
+   * Allows a user to add any music in the current music session in the game area.
+   */
+
+  public async addToQueue() {
+
+
+  }
   protected _updateFrom(newModel: MusicAreaModel): void {
     
   }
