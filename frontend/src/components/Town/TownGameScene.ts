@@ -98,7 +98,7 @@ export default class TownGameScene extends Phaser.Scene {
   }
 
   preload() {
-    this.load.image('jukebox', 'path/to/jukebox_32x48.png');
+    this.load.image('Jukebox_32x48', this._resourcePathPrefix + '/assets/tilesets/Jukebox_32x48.png');
     this.load.image(
       'Room_Builder_32x32',
       this._resourcePathPrefix + '/assets/tilesets/Room_Builder_32x32.png',
@@ -336,6 +336,7 @@ export default class TownGameScene extends Phaser.Scene {
       '13_Conference_Hall_32x32',
       '14_Basement_32x32',
       '16_Grocery_store_32x32',
+      'Jukebox_32x48',
     ].map(v => {
       const ret = this.map.addTilesetImage(v);
       assert(ret);
