@@ -8,6 +8,9 @@ export default class MusicArea {
 
   constructor(private _spotifyService: SpotifyAudioService) {}
 
+  // using the authorization method in SpotifyAudioService for this to work
+  join(): void {}
+
   play(): void {
     if (this.currentTrackID) {
       this._spotifyService.playTrack(this.currentTrackID);
@@ -17,15 +20,10 @@ export default class MusicArea {
     }
   }
 
+  // add a .catch
   pause(): void {
-    throw new Error('Method not implemented.');
-  }
-
-  loadTrack(trackId: string): void {
-    throw new Error('Method not implemented.');
-  }
-
-  seek(position: number): void {
-    throw new Error('Method not implemented.');
+    this._spotifyService.pause().then(() => {
+      this.isPLaying = false;
+    });
   }
 }
