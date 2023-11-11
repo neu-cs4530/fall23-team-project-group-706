@@ -73,8 +73,7 @@ export interface ViewingArea extends Interactable {
   elapsedTimeSec: number;
 }
 
-export interface MusicArea extends Interactable {
-};
+export type MusicArea = Interactable;
 
 export type GameStatus = 'IN_PROGRESS' | 'WAITING_TO_START' | 'OVER';
 /**

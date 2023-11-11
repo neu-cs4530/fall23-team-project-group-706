@@ -64,8 +64,8 @@ export default abstract class MusicAreaController<
     // if (instanceID) {
     //   await this._townController.sendInteractableCommand(this.id, {
       
-    //   });
-    // }
+    //  });
+    //}
   }
 
   /**
