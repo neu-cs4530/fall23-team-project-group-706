@@ -9,7 +9,7 @@ global.fetch = jest.fn(() =>
 
 describe('SpotifyAudioService', () => {
   it('getAccessToken should return access and refresh tokens', async () => {
-    const service = new SpotifyAudioService('client_id', 'client_secret', 'redirect_uri');
+    const service = new SpotifyAudioService('client_id', 'client_secret');
     const tokens = await service.getAccessToken('mock_code');
 
     expect(tokens).toEqual({

@@ -6,14 +6,32 @@ export default class MusicArea {
 
   currentTrackID: string | null = null;
 
-  constructor(private _spotifyService: SpotifyAudioService) {}
+  private _spotify: SpotifyAudioService;
+
+  constructor(spotify: SpotifyAudioService) {
+    this._spotify = spotify;
+  }
 
   // using the authorization method in SpotifyAudioService for this to work
-  join(): void {}
+  join(): void {
+    try {
+      this._spotify.getAuthUrl();
+    } catch (error) {
+      this.message = `${(error as Error).message}`;
+    }
+  }
+
+  search(songName: string): void {
+    try {
+      this._spotify.searchSongs(songName);
+    } catch (error) {
+      this.message = `${(error as Error).message}`;
+    }
+  }
 
   play(): void {
     if (this.currentTrackID) {
-      this._spotifyService.playTrack(this.currentTrackID);
+      this._spotify.playTrack(this.currentTrackID);
       this.isPLaying = true;
     } else {
       this.message = 'No current track loaded';
@@ -22,7 +40,7 @@ export default class MusicArea {
 
   // add a .catch
   pause(): void {
-    this._spotifyService.pause().then(() => {
+    this._spotify.pause().then(() => {
       this.isPLaying = false;
     });
   }

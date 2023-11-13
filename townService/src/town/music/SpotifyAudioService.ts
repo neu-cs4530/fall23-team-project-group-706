@@ -7,7 +7,7 @@ class SpotifyAudioService {
 
   private readonly TOKEN_URL = 'https://accounts.spotify.com/api/token';
 
-  private _accessToken: string;
+  private _accessToken: Promise<string>;
 
   private _clientId: string;
 
@@ -15,8 +15,7 @@ class SpotifyAudioService {
 
   private _redirectUri: string;
 
-  constructor(accessToken: string, clientId: string, clientSecret: string) {
-    this._accessToken = accessToken;
+  constructor(clientId: string, clientSecret: string) {
     this._clientId = clientId;
     this._clientSecret = clientSecret;
     this._redirectUri = 'https://localhost:8000/login';
@@ -38,9 +37,14 @@ class SpotifyAudioService {
     return `${this.AUTH_URL}?${queryParams}`;
   }
 
+  extractCodeFromUrl(url: string): string | null {
+    const urlObj = new URL(url);
+    return urlObj.searchParams.get('code');
+  }
+
   // I get the gist of this method but I honestly just took it straight from online
   // If you(Michael) understand it then perfect
-  async getAccessToken(code: string): Promise<{ accessToken: string; refreshToken: string }> {
+  async getAccessToken(code: string): Promise<{ accessToken: string }> {
     const params = new URLSearchParams({
       grant_type: 'authorization_code',
       code,
@@ -63,9 +67,39 @@ class SpotifyAudioService {
       }
 
       const data: SpotifyTokenResponse = await response.json();
-      return { accessToken: data.access_token, refreshToken: data.refresh_token };
+
+      return { accessToken: data.access_token };
     } catch (error) {
       console.error('Error obtaining access token:', error);
+      throw error;
+    }
+  }
+
+  async searchSongs(query: string, limit = 10, offset = 0): Promise<any> {
+    const searchEndpoint = `${this._BASE_URL}/search`;
+    const queryParams = new URLSearchParams({
+      q: query,
+      type: 'track',
+      limit: limit.toString(),
+      offset: offset.toString(),
+    });
+
+    try {
+      const response = await fetch(`${searchEndpoint}?${queryParams}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${this._accessToken}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Error searching songs:', error);
       throw error;
     }
   }
