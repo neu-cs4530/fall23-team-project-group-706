@@ -33865,7 +33865,7 @@
         {
          "columns":1,
          "firstgid":15053,
-         "image":"..\/jukebox_32x48.png",
+         "image":"..\/tilesets\/Jukebox_32x48.png",
          "imageheight":48,
          "imagewidth":32,
          "margin":0,
@@ -33874,15 +33874,15 @@
          "tilecount":1,
          "tileheight":48,
          "tiles":[
-              {
-               "id":0,     
-               "properties":[
-                      {
-                       "name":"collides",
-                       "type":"bool",
-                       "value":true
-                      }]
-              }],
+                {
+                 "id":0,
+                 "properties":[
+                        {
+                         "name":"collides",
+                         "type":"bool",
+                         "value":true
+                        }]
+                }],
          "tilewidth":32
         }],
  "tilewidth":32,
