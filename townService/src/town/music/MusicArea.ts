@@ -29,6 +29,7 @@ export default class MusicArea {
     try {
       // how do we save/return this result?
       // will this give us an ID or what?
+      // what's the difference between track ID/song ID?
       this._spotify.searchSongs(songName);
     } catch (error) {
       this.message = `${(error as Error).message}`;
