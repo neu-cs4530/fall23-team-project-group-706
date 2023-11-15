@@ -37,8 +37,6 @@ class SpotifyAudioService {
     return `${this.AUTH_URL}?${queryParams}`;
   }
 
-  // I get the gist of this method but I honestly just took it straight from online
-  // If you(Michael) understand it then perfect
   async getAccessToken(code: string | null): Promise<string> {
     if (code) {
       const params = new URLSearchParams({
@@ -73,7 +71,7 @@ class SpotifyAudioService {
     }
   }
 
-  async searchSongs(query: string, limit = 1, offset = 0): Promise<any> {
+  async searchSongs(query: string, limit = 1, offset = 0): Promise<string> {
     const searchEndpoint = `${this._BASE_URL}/search`;
     const queryParams = new URLSearchParams({
       q: query,
@@ -95,7 +93,8 @@ class SpotifyAudioService {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      return await response.json();
+      const data = await response.json();
+      return data.items.uri;
     } catch (error) {
       console.error('Error searching songs:', error);
       throw error;

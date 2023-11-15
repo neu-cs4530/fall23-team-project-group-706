@@ -1,4 +1,9 @@
 import InvalidParametersError from '../../lib/InvalidParametersError';
+import {
+  InteractableCommand,
+  InteractableCommandReturnType,
+  Player,
+} from '../../types/CoveyTownSocket';
 
 /* eslint-disable @typescript-eslint/no-useless-constructor */
 export default class MusicArea {
@@ -21,8 +26,14 @@ export default class MusicArea {
     this._spotify = spotify;
   }
 
-  // todo:
-  join(): void {
+  // todo: handle command, see tictactoegamearea.ts
+  public handleCommand<CommandType extends InteractableCommand>(
+    command: CommandType,
+    player: Player,
+  ): InteractableCommandReturnType<CommandType> {}
+
+  // todo: ??
+  join(player: Player): void {
     try {
       this._spotify.getAuthUrl();
     } catch (error) {
@@ -30,19 +41,13 @@ export default class MusicArea {
     }
   }
 
-  // todo:
-  leave(): void {}
+  // todo: ??
+  leave(player: Player): void {}
 
-  // todo:
-  search(songName: string): string {
-    try {
-      // how do we save/return this result?
-      // will this give us an ID or what?
-      // what's the difference between track ID/song ID?
-      this._spotify.searchSongs(songName);
-    } catch (error) {
-      this.message = `${(error as Error).message}`;
-    }
+  // finished: searches for a song based on name and returns uri
+  private async _search(songName: string): Promise<string> {
+    const resultURI = this._spotify.searchSongs(songName);
+    return resultURI;
   }
 
   // finished: gets the current song's uri from the queue array
@@ -50,23 +55,16 @@ export default class MusicArea {
     return this._qSong[this._currentSongIndex];
   }
 
-  // todo:
+  // finished: resume the player
   play(): void {
-    const songToPlay = this._getCurrentTrackID();
-    if (songToPlay != null) {
-      this._spotify.playTrack(songToPlay);
-      this.isPLaying = true;
-    } else {
-      this.message = 'No current track loaded';
-    }
+    this.isPLaying = true;
+    this._spotify.playTrack(this._getCurrentTrackID());
   }
 
-  // todo:
+  // finished: pause the player
   pause(): void {
-    this._spotify.pauseTrack().then(() => {
-      this.isPLaying = false;
-      this._spotify.pauseTrack();
-    });
+    this.isPLaying = false;
+    this._spotify.pauseTrack();
   }
 
   // finished: skip to next song in queue, updates index
@@ -78,7 +76,7 @@ export default class MusicArea {
     }
     this._currentSongIndex++;
     this._currentSongIndex %= this._qSong.length;
-    this._spotify.playTrack(this._getCurrentTrackID());
+    this._spotify.playTrack(this._getCurrentTrackID()).then(() => {});
   }
 
   // finished: skip to previous song in queue, updates index
@@ -97,8 +95,12 @@ export default class MusicArea {
   }
 
   // finished: add to queue based on song name search, updates index
-  addToQueue(songName: string): void {
-    this._qSong.push(this.search(songName));
+  // starts playing the song if the queue was previously empty
+  async addToQueue(songName: string): Promise<void> {
+    this._qSong.push(await this._search(songName));
     this._currentSongIndex++;
+    if (this._qSong.length === 1) {
+      this.play();
+    }
   }
 }
