@@ -94,47 +94,9 @@ class SpotifyAudioService {
       }
 
       const data = await response.json();
-      return data.items.uri;
-    } catch (error) {
-      console.error('Error searching songs:', error);
-      throw error;
-    }
-  }
-
-  async searchTrackByTitle(title: string): Promise<string> {
-    const searchEndpoint = `https://api.spotify.com/v1/search?q=${encodeURIComponent(
-      title,
-    )}&type=track&limit=1`;
-
-    try {
-      const response = await fetch(searchEndpoint, {
-        headers: {
-          Authorization: `Bearer ${this.getAccessToken(this._code).toString()}`,
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      if (data.tracks.items.length === 0) {
-        throw new Error('No tracks found for the given title');
-      }
-
       return data.tracks.items[0].uri; // Return the URI of the first track
     } catch (error) {
-      console.error('Error searching for track:', error);
-      throw error;
-    }
-  }
-
-  async addToQueue(title: string, queueSong: string[]): Promise<void> {
-    try {
-      const trackUri = await this.searchTrackByTitle(title);
-      queueSong.push(trackUri);
-    } catch (error) {
-      console.error('Error adding track to queue:', error);
+      console.error('Error searching songs:', error);
       throw error;
     }
   }
@@ -160,33 +122,14 @@ class SpotifyAudioService {
     }
   }
 
-  /** 
-  async playTrack(songName: string): Promise<void> {
-    const trackUri = await this.searchTrackByTitle(songName);
-    const playEndpoint = `${this._BASE_URL}/me/player/play`;
-    try {
-      await fetch(playEndpoint, {
-        method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${this.getAccessToken(this._code).toString()}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ uris: [trackUri] }),
-      });
-      console.log(`Playing song: ${songName}`);
-    } catch (error) {
-      console.error('Error in playing track:', error);
-    }
-  }
-  */
-
   async pauseTrack(): Promise<void> {
     const pauseEndpoint = `${this._BASE_URL}/me/player/pause`;
     try {
       await fetch(pauseEndpoint, {
         method: 'PUT',
         headers: {
-          Authorization: `Bearer ${this.getAccessToken(this._code).toString()}`,
+          'Authorization': `Bearer ${this.getAccessToken(this._code).toString()}`,
+          'Content-Type': 'application/json',
         },
       });
       console.log('Playback paused');

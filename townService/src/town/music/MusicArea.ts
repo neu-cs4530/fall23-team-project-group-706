@@ -32,8 +32,8 @@ export default class MusicArea {
     player: Player,
   ): InteractableCommandReturnType<CommandType> {}
 
-  // todo: ??
-  join(player: Player): void {
+  // todo: do we need player?
+  private _join(player: Player): void {
     try {
       this._spotify.getAuthUrl();
     } catch (error) {
@@ -41,8 +41,8 @@ export default class MusicArea {
     }
   }
 
-  // todo: ??
-  leave(player: Player): void {}
+  // todo: do we need player/this functions?
+  private _leave(player: Player): void {}
 
   // finished: searches for a song based on name and returns uri
   private async _search(songName: string): Promise<string> {
@@ -56,13 +56,13 @@ export default class MusicArea {
   }
 
   // finished: resume the player
-  play(): void {
+  private _play(): void {
     this.isPLaying = true;
     this._spotify.playTrack(this._getCurrentTrackID());
   }
 
   // finished: pause the player
-  pause(): void {
+  private _pause(): void {
     this.isPLaying = false;
     this._spotify.pauseTrack();
   }
@@ -70,7 +70,7 @@ export default class MusicArea {
   // finished: skip to next song in queue, updates index
   // loops around if end of queue
   // errors if queue empty
-  skip(): void {
+  private _skip(): void {
     if (this._qSong.length === 0) {
       throw new InvalidParametersError('No song in queue');
     }
@@ -82,7 +82,7 @@ export default class MusicArea {
   // finished: skip to previous song in queue, updates index
   // loops around if beginning of queue
   // errors if queue empty
-  back(): void {
+  private _back(): void {
     if (this._qSong.length === 0) {
       throw new InvalidParametersError('No song in queue');
     }
@@ -96,11 +96,11 @@ export default class MusicArea {
 
   // finished: add to queue based on song name search, updates index
   // starts playing the song if the queue was previously empty
-  async addToQueue(songName: string): Promise<void> {
+  private async _addToQueue(songName: string): Promise<void> {
     this._qSong.push(await this._search(songName));
     this._currentSongIndex++;
     if (this._qSong.length === 1) {
-      this.play();
+      this._play();
     }
   }
 }
