@@ -36,7 +36,7 @@ export default class MusicArea {
     }
   }
 
-  private _getCurrentTrackID(): string | null {
+  private _getCurrentTrackID(): string {
     return this._qSong[this._currentSongIndex];
   }
 
@@ -52,22 +52,25 @@ export default class MusicArea {
 
   // add a .catch
   pause(): void {
-    this._spotify.pause().then(() => {
+    this._spotify.pauseTrack().then(() => {
       this.isPLaying = false;
-      this._spotify.pause();
+      this._spotify.pauseTrack();
     });
   }
 
   skip(): void {
     this._currentSongIndex++;
+    this._currentSongIndex %= this._qSong.length;
+    this._spotify.playTrack(this._getCurrentTrackID());
   }
 
   back(): void {
     if (this._currentSongIndex > 0) {
       this._currentSongIndex--;
     } else {
-      this.message = 'Cannot go back';
+      this._currentSongIndex = this._qSong.length - 1;
     }
+    this._spotify.playTrack(this._getCurrentTrackID());
   }
 
   addToQueue(songName: string): void {

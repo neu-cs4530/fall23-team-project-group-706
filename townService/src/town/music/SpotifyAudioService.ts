@@ -13,8 +13,6 @@ class SpotifyAudioService {
 
   private _redirectUri: string;
 
-  private _currentTrackIdx = 0;
-
   private readonly _code = new URLSearchParams(window.location.search).get('code');
 
   constructor(clientId: string, clientSecret: string) {
@@ -142,13 +140,7 @@ class SpotifyAudioService {
     }
   }
 
-  async playNextTrack(queueSong: string[]): Promise<void> {
-    if (queueSong.length === 0) {
-      throw new Error('Queue is empty');
-    }
-
-    this._currentTrackIdx = (this._currentTrackIdx + 1) % queueSong.length;
-    const nextTrackUri = queueSong[this._currentTrackIdx];
+  async playTrack(songURI: string): Promise<void> {
     const playEndpoint = `https://api.spotify.com/v1/me/player/play`;
     try {
       const response = await fetch(playEndpoint, {
@@ -157,51 +149,19 @@ class SpotifyAudioService {
           'Authorization': `Bearer ${this.getAccessToken(this._code).toString()}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ uris: [nextTrackUri] }),
+        body: JSON.stringify({ uris: [songURI] }),
       });
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
     } catch (error) {
-      console.error('Error playing next track:', error);
+      console.error('Error playing track:', error);
       throw error;
     }
   }
 
-  async playPreviousTrack(queueSong: []): Promise<void> {
-    if (queueSong.length === 0) {
-      throw new Error('Queue is empty');
-    }
-
-    // Decrement the current track index and ensure it does not go below 0
-    if (this._currentTrackIdx > 0) {
-      this._currentTrackIdx--;
-    } else {
-      this._currentTrackIdx = queueSong.length - 1; // Go to the last track if we're at the start
-    }
-
-    const previousTrackUri = queueSong[this._currentTrackIdx];
-    const playEndpoint = `${this._BASE_URL}/me/player/play`;
-    try {
-      const response = await fetch(playEndpoint, {
-        method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${this.getAccessToken(this._code).toString()}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ uris: [previousTrackUri] }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-    } catch (error) {
-      console.error('Error playing next track:', error);
-      throw error;
-    }
-  }
-
+  /** 
   async playTrack(songName: string): Promise<void> {
     const trackUri = await this.searchTrackByTitle(songName);
     const playEndpoint = `${this._BASE_URL}/me/player/play`;
@@ -219,6 +179,7 @@ class SpotifyAudioService {
       console.error('Error in playing track:', error);
     }
   }
+  */
 
   async pauseTrack(): Promise<void> {
     const pauseEndpoint = `${this._BASE_URL}/me/player/pause`;
