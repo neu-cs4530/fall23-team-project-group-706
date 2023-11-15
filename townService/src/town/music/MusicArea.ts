@@ -1,3 +1,5 @@
+import InvalidParametersError from '../../lib/InvalidParametersError';
+
 /* eslint-disable @typescript-eslint/no-useless-constructor */
 export default class MusicArea {
   isPLaying = false;
@@ -58,13 +60,25 @@ export default class MusicArea {
     });
   }
 
+  // finished: skip to next song in queue
+  // loops around if end of queue
+  // errors if queue empty
   skip(): void {
+    if (this._qSong.length === 0) {
+      throw new InvalidParametersError('No song in queue');
+    }
     this._currentSongIndex++;
     this._currentSongIndex %= this._qSong.length;
     this._spotify.playTrack(this._getCurrentTrackID());
   }
 
+  // finished: skip to previouso song in queue
+  // loops around if beginning of queue
+  // errors if queue empty
   back(): void {
+    if (this._qSong.length === 0) {
+      throw new InvalidParametersError('No song in queue');
+    }
     if (this._currentSongIndex > 0) {
       this._currentSongIndex--;
     } else {
