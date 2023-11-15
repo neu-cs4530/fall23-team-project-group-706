@@ -7,13 +7,15 @@ class SpotifyAudioService {
 
   private readonly TOKEN_URL = 'https://accounts.spotify.com/api/token';
 
-  private _accessToken: Promise<string>;
-
   private _clientId: string;
 
   private _clientSecret: string;
 
   private _redirectUri: string;
+
+  private _currentTrackIdx = 0;
+
+  private readonly _code = new URLSearchParams(window.location.search).get('code');
 
   constructor(clientId: string, clientSecret: string) {
     this._clientId = clientId;
@@ -37,45 +39,43 @@ class SpotifyAudioService {
     return `${this.AUTH_URL}?${queryParams}`;
   }
 
-  extractCodeFromUrl(url: string): string | null {
-    const urlObj = new URL(url);
-    return urlObj.searchParams.get('code');
-  }
-
   // I get the gist of this method but I honestly just took it straight from online
   // If you(Michael) understand it then perfect
-  async getAccessToken(code: string): Promise<{ accessToken: string }> {
-    const params = new URLSearchParams({
-      grant_type: 'authorization_code',
-      code,
-      redirect_uri: this._redirectUri,
-      client_id: this._clientId,
-      client_secret: this._clientSecret,
-    });
-
-    try {
-      const response = await fetch(this.TOKEN_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: params,
+  async getAccessToken(code: string | null): Promise<string> {
+    if (code) {
+      const params = new URLSearchParams({
+        grant_type: 'authorization_code',
+        code,
+        redirect_uri: this._redirectUri,
+        client_id: this._clientId,
+        client_secret: this._clientSecret,
       });
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+      try {
+        const response = await fetch(this.TOKEN_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body: params,
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data: SpotifyTokenResponse = await response.json();
+        return data.access_token;
+      } catch (error) {
+        console.error('Error obtaining access token:', error);
+        throw error;
       }
-
-      const data: SpotifyTokenResponse = await response.json();
-
-      return { accessToken: data.access_token };
-    } catch (error) {
-      console.error('Error obtaining access token:', error);
-      throw error;
+    } else {
+      throw new Error('something went wrong');
     }
   }
 
-  async searchSongs(query: string, limit = 10, offset = 0): Promise<any> {
+  async searchSongs(query: string, limit = 1, offset = 0): Promise<any> {
     const searchEndpoint = `${this._BASE_URL}/search`;
     const queryParams = new URLSearchParams({
       q: query,
@@ -88,7 +88,7 @@ class SpotifyAudioService {
       const response = await fetch(`${searchEndpoint}?${queryParams}`, {
         method: 'GET',
         headers: {
-          'Authorization': `Bearer ${this._accessToken}`,
+          'Authorization': `Bearer ${this.getAccessToken(this._code).toString()}}`,
           'Content-Type': 'application/json',
         },
       });
@@ -104,30 +104,129 @@ class SpotifyAudioService {
     }
   }
 
-  async playTrack(trackId: string): Promise<void> {
+  async searchTrackByTitle(title: string): Promise<string> {
+    const searchEndpoint = `https://api.spotify.com/v1/search?q=${encodeURIComponent(
+      title,
+    )}&type=track&limit=1`;
+
+    try {
+      const response = await fetch(searchEndpoint, {
+        headers: {
+          Authorization: `Bearer ${this.getAccessToken(this._code).toString()}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      if (data.tracks.items.length === 0) {
+        throw new Error('No tracks found for the given title');
+      }
+
+      return data.tracks.items[0].uri; // Return the URI of the first track
+    } catch (error) {
+      console.error('Error searching for track:', error);
+      throw error;
+    }
+  }
+
+  async addToQueue(title: string, queueSong: string[]): Promise<void> {
+    try {
+      const trackUri = await this.searchTrackByTitle(title);
+      queueSong.push(trackUri);
+    } catch (error) {
+      console.error('Error adding track to queue:', error);
+      throw error;
+    }
+  }
+
+  async playNextTrack(queueSong: string[]): Promise<void> {
+    if (queueSong.length === 0) {
+      throw new Error('Queue is empty');
+    }
+
+    this._currentTrackIdx = (this._currentTrackIdx + 1) % queueSong.length;
+    const nextTrackUri = queueSong[this._currentTrackIdx];
+    const playEndpoint = `https://api.spotify.com/v1/me/player/play`;
+    try {
+      const response = await fetch(playEndpoint, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${this.getAccessToken(this._code).toString()}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ uris: [nextTrackUri] }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+    } catch (error) {
+      console.error('Error playing next track:', error);
+      throw error;
+    }
+  }
+
+  async playPreviousTrack(queueSong: []): Promise<void> {
+    if (queueSong.length === 0) {
+      throw new Error('Queue is empty');
+    }
+
+    // Decrement the current track index and ensure it does not go below 0
+    if (this._currentTrackIdx > 0) {
+      this._currentTrackIdx--;
+    } else {
+      this._currentTrackIdx = queueSong.length - 1; // Go to the last track if we're at the start
+    }
+
+    const previousTrackUri = queueSong[this._currentTrackIdx];
+    const playEndpoint = `${this._BASE_URL}/me/player/play`;
+    try {
+      const response = await fetch(playEndpoint, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${this.getAccessToken(this._code).toString()}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ uris: [previousTrackUri] }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+    } catch (error) {
+      console.error('Error playing next track:', error);
+      throw error;
+    }
+  }
+
+  async playTrack(songName: string): Promise<void> {
+    const trackUri = await this.searchTrackByTitle(songName);
     const playEndpoint = `${this._BASE_URL}/me/player/play`;
     try {
       await fetch(playEndpoint, {
         method: 'PUT',
         headers: {
-          'Authorization': `Bearer ${this._accessToken}`,
+          'Authorization': `Bearer ${this.getAccessToken(this._code).toString()}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ uris: [`spotify:track:${trackId}`] }),
+        body: JSON.stringify({ uris: [trackUri] }),
       });
-      console.log(`Playing track with ID: ${trackId}`);
+      console.log(`Playing song: ${songName}`);
     } catch (error) {
       console.error('Error in playing track:', error);
     }
   }
 
-  async pause(): Promise<void> {
+  async pauseTrack(): Promise<void> {
     const pauseEndpoint = `${this._BASE_URL}/me/player/pause`;
     try {
       await fetch(pauseEndpoint, {
         method: 'PUT',
         headers: {
-          Authorization: `Bearer ${this._accessToken}`,
+          Authorization: `Bearer ${this.getAccessToken(this._code).toString()}`,
         },
       });
       console.log('Playback paused');

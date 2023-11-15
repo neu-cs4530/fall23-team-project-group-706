@@ -1,8 +1,11 @@
+/* eslint-disable no-return-assign */
 /* eslint-disable @typescript-eslint/no-useless-constructor */
 export default class MusicArea {
   isPLaying = false;
 
   message = '';
+
+  private _qSong: string[] = [];
 
   currentTrackID: string | null = null;
 
@@ -23,7 +26,8 @@ export default class MusicArea {
 
   search(songName: string): void {
     try {
-      this._spotify.searchSongs(songName);
+      // this._spotify.searchSongs(songName);
+      this._spotify.searchTrackByTitle(songName);
     } catch (error) {
       this.message = `${(error as Error).message}`;
     }
@@ -31,17 +35,27 @@ export default class MusicArea {
 
   play(): void {
     if (this.currentTrackID) {
-      this._spotify.playTrack(this.currentTrackID);
-      this.isPLaying = true;
+      this._spotify
+        .playTrack(this.currentTrackID)
+        .then(() => {
+          this.isPLaying = false;
+        })
+        .catch(error => (this.message = `${(error as Error).message}`));
     } else {
       this.message = 'No current track loaded';
     }
   }
 
-  // add a .catch
   pause(): void {
-    this._spotify.pause().then(() => {
-      this.isPLaying = false;
-    });
+    if (this.isPLaying) {
+      this._spotify
+        .pauseTrack()
+        .then(() => {
+          this.isPLaying = false;
+        })
+        .catch(error => (this.message = `${(error as Error).message}`));
+    } else {
+      this.message = 'Song had been paused already';
+    }
   }
 }

@@ -12,14 +12,26 @@ const clientId = 'YOUR_CLIENT_ID';
 const clientSecret = 'YOUR_CLIENT_SECRET';
 const redirectUri = 'YOUR_REDIRECT_URI';
 
+function generateRandomString(length: number): string {
+  let text = '';
+  const allALPHA = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  for (let i = 0; i < length; i++) {
+    text += allALPHA.charAt(Math.floor(Math.random() * allALPHA.length));
+  }
+  return text;
+}
+
+const state = generateRandomString(16);
+
 app.get('/login', (req, res) => {
-  const scopes = 'user-read-private user-read-email';
+  const scopes = ' streaming user-read-private user-read-email';
   res.redirect(
     `https://accounts.spotify.com/authorize?${new URLSearchParams({
       response_type: 'code',
       client_id: clientId,
       scope: scopes,
       redirect_uri: redirectUri,
+      state,
     })}`,
   );
 });
