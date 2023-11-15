@@ -2,21 +2,26 @@ import InvalidParametersError from '../../lib/InvalidParametersError';
 
 /* eslint-disable @typescript-eslint/no-useless-constructor */
 export default class MusicArea {
+  // for play/pause
   isPLaying = false;
 
   message = '';
 
+  // our spotify connection
   private _spotify: SpotifyAudioService;
 
+  // queue of song URIs
   private _qSong: string[] = [];
 
+  // index to track currently playing song
   private _currentSongIndex = 0;
 
+  // initialize with spotify connection
   constructor(spotify: SpotifyAudioService) {
     this._spotify = spotify;
   }
 
-  // using the authorization method in SpotifyAudioService for this to work
+  // todo:
   join(): void {
     try {
       this._spotify.getAuthUrl();
@@ -25,8 +30,10 @@ export default class MusicArea {
     }
   }
 
+  // todo:
   leave(): void {}
 
+  // todo:
   search(songName: string): string {
     try {
       // how do we save/return this result?
@@ -38,10 +45,12 @@ export default class MusicArea {
     }
   }
 
+  // finished: gets the current song's uri from the queue array
   private _getCurrentTrackID(): string {
     return this._qSong[this._currentSongIndex];
   }
 
+  // todo:
   play(): void {
     const songToPlay = this._getCurrentTrackID();
     if (songToPlay != null) {
@@ -52,7 +61,7 @@ export default class MusicArea {
     }
   }
 
-  // add a .catch
+  // todo:
   pause(): void {
     this._spotify.pauseTrack().then(() => {
       this.isPLaying = false;
@@ -60,7 +69,7 @@ export default class MusicArea {
     });
   }
 
-  // finished: skip to next song in queue
+  // finished: skip to next song in queue, updates index
   // loops around if end of queue
   // errors if queue empty
   skip(): void {
@@ -72,7 +81,7 @@ export default class MusicArea {
     this._spotify.playTrack(this._getCurrentTrackID());
   }
 
-  // finished: skip to previouso song in queue
+  // finished: skip to previous song in queue, updates index
   // loops around if beginning of queue
   // errors if queue empty
   back(): void {
@@ -87,6 +96,7 @@ export default class MusicArea {
     this._spotify.playTrack(this._getCurrentTrackID());
   }
 
+  // finished: add to queue based on song name search, updates index
   addToQueue(songName: string): void {
     this._qSong.push(this.search(songName));
     this._currentSongIndex++;
