@@ -21,6 +21,7 @@ class SpotifyAudioService {
     this._redirectUri = 'https://localhost:8000/login';
   }
 
+  // returns the auth url
   getAuthUrl(): string {
     const scopes = [
       'user-read-private',
@@ -37,6 +38,7 @@ class SpotifyAudioService {
     return `${this.AUTH_URL}?${queryParams}`;
   }
 
+  // returns access token
   async getAccessToken(code: string | null): Promise<string> {
     if (code) {
       const params = new URLSearchParams({
@@ -71,6 +73,7 @@ class SpotifyAudioService {
     }
   }
 
+  // searches spotify for a single song and returns its uri
   async searchSongs(query: string, limit = 1, offset = 0): Promise<string> {
     const searchEndpoint = `${this._BASE_URL}/search`;
     const queryParams = new URLSearchParams({
@@ -101,6 +104,7 @@ class SpotifyAudioService {
     }
   }
 
+  // unpauses or starts playing the music
   async playTrack(songURI: string): Promise<void> {
     const playEndpoint = `https://api.spotify.com/v1/me/player/play`;
     try {
@@ -122,6 +126,7 @@ class SpotifyAudioService {
     }
   }
 
+  // pauses the music
   async pauseTrack(): Promise<void> {
     const pauseEndpoint = `${this._BASE_URL}/me/player/pause`;
     try {
