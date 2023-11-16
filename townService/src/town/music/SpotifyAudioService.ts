@@ -13,16 +13,28 @@ class SpotifyAudioService {
 
   private _redirectUri: string;
 
-  private readonly _code = new URLSearchParams(window.location.search).get('code');
+  private readonly _code: string = new URLSearchParams(window.location.search).get(
+    'code',
+  ) as string;
 
   constructor(clientId: string, clientSecret: string) {
     this._clientId = clientId;
     this._clientSecret = clientSecret;
-    this._redirectUri = 'https://localhost:8000/login';
+    this._redirectUri = 'https://localhost:3000/login';
+  }
+
+  private _generateRandomString(length: number): string {
+    let text = '';
+    const allALPHA = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    for (let i = 0; i < length; i++) {
+      text += allALPHA.charAt(Math.floor(Math.random() * allALPHA.length));
+    }
+    return text;
   }
 
   // returns the auth url
   getAuthUrl(): string {
+    const state = this._generateRandomString(16);
     const scopes = [
       'user-read-private',
       'user-read-email',
@@ -34,42 +46,43 @@ class SpotifyAudioService {
       response_type: 'code',
       client_id: this._clientId,
       scope: scopeString,
+      state,
     });
     return `${this.AUTH_URL}?${queryParams}`;
   }
 
   // returns access token
-  async getAccessToken(code: string | null): Promise<string> {
-    if (code) {
-      const params = new URLSearchParams({
-        grant_type: 'authorization_code',
-        code,
-        redirect_uri: this._redirectUri,
-        client_id: this._clientId,
-        client_secret: this._clientSecret,
+  async getAccessToken(code: string): Promise<string> {
+    if (!code) {
+      document.location = this.getAuthUrl();
+    }
+
+    const params = new URLSearchParams({
+      grant_type: 'authorization_code',
+      code,
+      redirect_uri: this._redirectUri,
+      client_id: this._clientId,
+      client_secret: this._clientSecret,
+    });
+
+    try {
+      const response = await fetch(this.TOKEN_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: params,
       });
 
-      try {
-        const response = await fetch(this.TOKEN_URL, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
-          body: params,
-        });
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data: SpotifyTokenResponse = await response.json();
-        return data.access_token;
-      } catch (error) {
-        console.error('Error obtaining access token:', error);
-        throw error;
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
-    } else {
-      throw new Error('something went wrong');
+
+      const data: SpotifyTokenResponse = await response.json();
+      return data.access_token;
+    } catch (error) {
+      console.error('Error obtaining access token:', error);
+      throw error;
     }
   }
 

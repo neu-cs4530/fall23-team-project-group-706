@@ -1,3 +1,4 @@
+/* eslint-disable consistent-return */
 /* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable @typescript-eslint/no-unused-vars */
@@ -35,3 +36,43 @@ app.get('/login', (req, res) => {
     })}`,
   );
 });
+
+app.get('/callback', async (req, res) => {
+  const authorizationCode = req.query.code as string;
+
+  if (!authorizationCode) {
+    return res.status(400).send('Authorization code is required');
+  }
+
+  const tokenUrl = 'https://accounts.spotify.com/api/token';
+  const params = new URLSearchParams({
+    grant_type: 'authorization_code',
+    code: authorizationCode,
+    redirect_uri: redirectUri,
+    client_id: clientId,
+    client_secret: clientSecret,
+  });
+
+  try {
+    const response = await fetch(tokenUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Authorization': `Basic ${Buffer.from(`${clientId}:${clientSecret}`).toString('base64')}`,
+      },
+      body: params,
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    res.json(data);
+  } catch (error) {
+    console.error('Error requesting access token:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
+app.listen(port, () => console.info(`Listening on port ${port}`));
