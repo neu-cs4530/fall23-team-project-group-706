@@ -9,7 +9,7 @@ import Interactable from '../components/Town/Interactable';
 import ConversationArea from '../components/Town/interactables/ConversationArea';
 import GameArea from '../components/Town/interactables/GameArea';
 import ViewingArea from '../components/Town/interactables/ViewingArea';
-import MusicArea from '../components/Town/interactables/MusicArea';
+import MusicArea from '../components/Town/interactables/MusicAreaInteractable';
 import { LoginController } from '../contexts/LoginControllerContext';
 import { TownsService, TownsServiceClient } from '../generated/client';
 import useTownController from '../hooks/useTownController';
@@ -30,6 +30,7 @@ import {
 import { isConversationArea, isTicTacToeArea, isViewingArea } from '../types/TypeUtils';
 import ConversationAreaController from './interactable/ConversationAreaController';
 import GameAreaController, { GameEventTypes } from './interactable/GameAreaController';
+import MusicAreaController, { MusicEventTypes } from './interactable/MusicAreaController';
 import InteractableAreaController, {
   BaseInteractableEventMap,
 } from './interactable/InteractableAreaController';
@@ -666,6 +667,26 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
       return existingController as GameAreaController<GameType, EventsType>;
     } else {
       throw new Error('Game area controller not created');
+    }
+  }
+
+  /**
+     * Retrives the game area controller corresponding to a game area by ID, or
+     * throws an error if the game area controller does not exist
+     *
+     * @param gameArea
+     * @returns
+     */
+  public getMusicAreaController<EventsType extends MusicEventTypes>(
+    musicArea: MusicArea,
+  ): MusicAreaController<EventsType> {
+    const existingController = this._interactableControllers.find(
+      eachExistingArea => eachExistingArea.id === musicArea.name,
+    );
+    if (existingController instanceof MusicAreaController) {
+      return existingController as MusicAreaController<EventsType>;
+    } else {
+      throw new Error('Music area controller not created');
     }
   }
 

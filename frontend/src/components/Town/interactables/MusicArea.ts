@@ -1,87 +1,90 @@
+import {
+  Accordion,
+  AccordionButton,
+  AccordionIcon,
+  AccordionItem,
+  AccordionPanel,
+  Box,
+  Button,
+  Container,
+  Heading,
+  List,
+  ListItem,
+  Modal,
+  ModalCloseButton,
+  ModalContent,
+  ModalHeader,
+  ModalOverlay,
+  useToast,
+} from '@chakra-ui/react';
 import Interactable, { KnownInteractableTypes } from '../Interactable';
-import { BoundingBox } from '../../../types/CoveyTownSocket';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useInteractable, useInteractableAreaController } from '../../../classes/TownController';
 import useTownController from '../../../hooks/useTownController';
-import MusicAreaController from '../../../classes/interactable/MusicAreaController';
+import MusicAreaController, { MusicEventTypes } from '../../../classes/interactable/MusicAreaController';
+import { InteractableID, MusicArea } from '../../../types/CoveyTownSocket';
+import MusicAreaInteractable from './MusicAreaInteractable';
+
+function MusicArea({ interactableID }: { interactableID: InteractableID }): JSX.Element  {
+  const [joiningSession, setJoiningSession] = useState(false);
+  const [pauseSession, setPauseSession] = useState(false);
+  const [currentSong, setCurrentSong] = useState('');
+  
+  const musicAreaController = useInteractableAreaController<MusicAreaController<MusicEventTypes>>(interactableID);
+
+  const townController = useTownController();
+  useEffect(() => {
+    const updateMusicState = () => {
+      // set queue status
+      // set play or pause status
+      // set which song?
+    };
+
+    musicAreaController.addListener('queueUpdated', updateMusicState);
+    return () => {
+      musicAreaController.removeListener('queueUpdated', updateMusicState);
+    };
+  }, [townController, musicAreaController]);
+
+  return (
+    <Container> hey < /Container>
+  );
+  
+}
 
 
-export default class MusicArea extends Interactable {
-  private _isInteracting = false;
-
-  private _labelText?: Phaser.GameObjects.Text;
-  // const musicAreaController = useInteractableAreaController<MusicAreaController>();
-  ///AHDFJLASFJNKASF;JDN;;NFSN;NDDSNFDN;
-  // TODO
 
 
-  // const townController = useTownController();
-  // useEffect(() => {
-  //   const updateGameState = () => {
-  //     // set queue status
-  //     // set play or pause status
-  //     // set which song?
-  //   };
-
-  //   musicAreaController.addListener('queueUpdated', onGameEnd);
-  //   return () => {
-  //     musicAreaController.removeListener('queueUpdated', updateGameState);
-  //   };
-  // }, [townController, musicAreaController]);
 
 
-  // below regards satisfying the Interactable interface
+/**
+ * A wrapper component for the TicTacToeArea component.
+ * Determines if the player is currently in a tic tac toe area on the map, and if so,
+ * renders the TicTacToeArea component in a modal.
+ *
+ */
+export default function MusicAreaWrapper(): JSX.Element {
+  const musicArea = useInteractable<MusicAreaInteractable>('musicArea');
+  const townController = useTownController();
+  const closeModal = useCallback(() => {
+    if (musicArea) {
+      townController.interactEnd(musicArea);
+      const controller = townController.getMusicAreaController(musicArea);
+      controller.leaveSession();
+    }
+  }, [townController, musicArea]);
 
-  addedToScene() {
-    super.addedToScene();
-    this.setTintFill();
-    this.setAlpha(0.3);
-    this.setDepth(-1);
-    this.scene.add.text(
-      this.x - this.displayWidth / 2,
-      this.y + this.displayHeight / 2,
-      this.name,
-      { color: '#FFFFFF', backgroundColor: '#000000' },
+  if (musicArea && musicArea.getData('type') === 'TicTacToe') {
+    return (
+      <Modal isOpen={true} onClose={closeModal} closeOnOverlayClick={false}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>{musicArea.name}</ModalHeader>
+          <ModalCloseButton />
+          <MusicArea interactableID={musicArea.name} />;
+        </ModalContent>
+      </Modal>
     );
-    this._labelText = this.scene.add.text(
-      this.x - this.displayWidth / 2,
-      this.y - this.displayHeight / 2,
-      `Press space to open the jukebox!!!`,
-      { color: '#FFFFFF', backgroundColor: '#000000' },
-    ).setDepth(30);
-    this._labelText.setVisible(false);
   }
-
-
-  public getBoundingBox(): BoundingBox {
-    const { x, y, width, height } = this.getBounds();
-    return { x, y, width, height };
-  }
-
-  overlapExit(): void {
-    if (this._isInteracting) {
-      this.townController.interactableEmitter.emit('endInteraction', this);
-      this._isInteracting = false;
-    }
-    this._labelText?.setVisible(false);
-  }
-
-  overlap(): void {
-    if (!this._labelText) {
-      throw new Error('Should not be able to overlap with this interactable before added to scene');
-    }
-    const location = this.townController.ourPlayer.location;
-    this._labelText.setX(location.x);
-    this._labelText.setY(location.y);
-    this._labelText.setVisible(true);
-  }
-  
-  interact(): void {
-    this._labelText?.setVisible(false);
-    this._isInteracting = true;
-  }
-  
-  getType(): KnownInteractableTypes {
-    return 'musicArea';
-  }
+  return <></>;
 }
