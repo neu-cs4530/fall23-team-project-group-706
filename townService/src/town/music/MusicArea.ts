@@ -8,9 +8,9 @@ import {
 /* eslint-disable @typescript-eslint/no-useless-constructor */
 export default class MusicArea {
   // for play/pause
-  isPLaying = false;
+  private isPlaying = false;
 
-  message = '';
+  private message = '';
 
   // our spotify connection
   private _spotify: SpotifyAudioService;
@@ -26,11 +26,29 @@ export default class MusicArea {
     this._spotify = spotify;
   }
 
+  get paused() : boolean {
+    return !this.isPlaying;
+  }
+
+  get playing() : boolean {
+    return !this.paused;
+  }
+
+  get queue() : string[] {
+    return this._qSong;
+  }
+
+  get currentIndex() : number {
+    return this._currentSongIndex;
+  }
+
   // todo: handle command, see tictactoegamearea.ts
   public handleCommand<CommandType extends InteractableCommand>(
     command: CommandType,
     player: Player,
-  ): InteractableCommandReturnType<CommandType> {}
+  ): InteractableCommandReturnType<CommandType> {
+    if (command.type === '')
+  }
 
   // todo: do we need player?
   private _join(player: Player): void {
@@ -57,13 +75,13 @@ export default class MusicArea {
 
   // finished: resume the player
   private _play(): void {
-    this.isPLaying = true;
+    this.isPlaying = true;
     this._spotify.playTrack(this._getCurrentTrackID());
   }
 
   // finished: pause the player
   private _pause(): void {
-    this.isPLaying = false;
+    this.isPlaying = false;
     this._spotify.pauseTrack();
   }
 
