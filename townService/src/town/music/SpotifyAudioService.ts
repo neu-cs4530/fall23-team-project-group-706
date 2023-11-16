@@ -74,21 +74,15 @@ class SpotifyAudioService {
   }
 
   // searches spotify for a single song and returns its uri
-  async searchSongs(query: string, limit = 1, offset = 0): Promise<string> {
-    const searchEndpoint = `${this._BASE_URL}/search`;
-    const queryParams = new URLSearchParams({
-      q: query,
-      type: 'track',
-      limit: limit.toString(),
-      offset: offset.toString(),
-    });
+  async searchSongs(title: string): Promise<string> {
+    const searchEndpoint = `https://api.spotify.com/v1/search?q=${encodeURIComponent(
+      title,
+    )}&type=track&limit=1`;
 
     try {
-      const response = await fetch(`${searchEndpoint}?${queryParams}`, {
-        method: 'GET',
+      const response = await fetch(searchEndpoint, {
         headers: {
-          'Authorization': `Bearer ${this.getAccessToken(this._code).toString()}}`,
-          'Content-Type': 'application/json',
+          Authorization: `Bearer ${this.getAccessToken(this._code).toString()}`,
         },
       });
 
@@ -97,9 +91,13 @@ class SpotifyAudioService {
       }
 
       const data = await response.json();
+      if (data.tracks.items.length === 0) {
+        throw new Error('No tracks found for the given title');
+      }
+
       return data.tracks.items[0].uri; // Return the URI of the first track
     } catch (error) {
-      console.error('Error searching songs:', error);
+      console.error('Error searching for track:', error);
       throw error;
     }
   }
