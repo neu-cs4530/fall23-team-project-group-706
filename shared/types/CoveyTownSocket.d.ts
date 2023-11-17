@@ -73,8 +73,7 @@ export interface ViewingArea extends Interactable {
   elapsedTimeSec: number;
 }
 
-export interface MusicArea extends Interactable {
-};
+export type MusicArea = Interactable;
 
 export type GameStatus = 'IN_PROGRESS' | 'WAITING_TO_START' | 'OVER';
 /**
@@ -111,6 +110,7 @@ export interface TicTacToeMove {
   col: TicTacToeGridPosition;
 }
 
+
 /**
  * Type for the state of a TicTacToe game
  * The state of the game is represented as a list of moves, and the playerIDs of the players (x and o)
@@ -124,6 +124,7 @@ export interface TicTacToeGameState extends WinnableGameState {
 
 export type InteractableID = string;
 export type GameInstanceID = string;
+// export type MusicAreaID = string;
 
 /**
  * Type for the result of a game
@@ -132,6 +133,7 @@ export interface GameResult {
   gameID: GameInstanceID;
   scores: { [playerName: string]: number };
 }
+
 
 /**
  * Base type for an *instance* of a game. An instance of a game
@@ -177,7 +179,10 @@ interface InteractableCommandBase {
   type: string;
 }
 
-export type InteractableCommand =  ViewingAreaUpdateCommand | JoinGameCommand | GameMoveCommand<TicTacToeMove> | LeaveGameCommand;
+export type InteractableCommand =  ViewingAreaUpdateCommand | JoinGameCommand | GameMoveCommand<TicTacToeMove> | LeaveGameCommand | JoinMusicCommand |
+PlayMusicCommand | PauseMusicCommand | AddToQueueCommand | SearchSongCommand | SkipSongCommand | PreviousSongCommand | VotingCommand;
+
+
 export interface ViewingAreaUpdateCommand  {
   type: 'ViewingAreaUpdate';
   update: ViewingArea;
@@ -185,6 +190,42 @@ export interface ViewingAreaUpdateCommand  {
 export interface JoinGameCommand {
   type: 'JoinGame';
 }
+
+export interface JoinMusicCommand {
+  type: 'JoinMusic';
+}
+
+export interface PlayMusicCommand {
+  type: 'PlayMusic';
+}
+
+export interface PauseMusicCommand {
+  type: 'PauseMuisc';
+}
+
+export interface AddToQueueCommand {
+  type: 'AddToQueue';
+  song: string;
+}
+
+export interface SearchSongCommand {
+  type: 'SearchSong';
+  song: string;
+}
+
+export interface SkipSongCommand {
+  type: 'SkipSong';
+}
+
+export interface PreviousSongCommand {
+  type: 'PreviousSong';
+}
+
+export interface VotingCommand {
+  type: 'VoteSong';
+  song: string;
+}
+
 export interface LeaveGameCommand {
   type: 'LeaveGame';
   gameID: GameInstanceID;
@@ -199,6 +240,12 @@ export type InteractableCommandReturnType<CommandType extends InteractableComman
   CommandType extends ViewingAreaUpdateCommand ? undefined :
   CommandType extends GameMoveCommand<TicTacToeMove> ? undefined :
   CommandType extends LeaveGameCommand ? undefined :
+  CommandType extends JoinMusicCommand ? undefined :
+  CommandType extends PlayMusicCommand ? undefined :
+  CommandType extends PauseMusicCommand ? undefined :
+  CommandType extends AddToQueueCommand ? undefined :
+  CommandType extends SearchSongCommand ? undefined :
+  CommandType extends VotingCommand ? undefined :
   never;
 
 export type InteractableCommandResponse<MessageType> = {

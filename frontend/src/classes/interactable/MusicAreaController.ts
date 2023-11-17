@@ -46,7 +46,6 @@ export default abstract class MusicAreaController<
 
   /**
    * Sends a request to the server to join the current listening session in the music area, or create a new one if there is no queue in progress.
-   *
    * @throws An error if the server rejects the request to join the session.
    */
   public async joinSession() {
@@ -64,8 +63,8 @@ export default abstract class MusicAreaController<
     // if (instanceID) {
     //   await this._townController.sendInteractableCommand(this.id, {
       
-    //   });
-    // }
+    //  });
+    //}
   }
 
   /**
