@@ -89,7 +89,7 @@ export default class MusicArea {
     return resultURI;
   }
 
-  // finished: gets the current song's uri from the queue array
+  // finished: gets the current song's name from the queue array
   public getCurrentTrackID(): string {
     return this._qSong[this._currentSongIndex];
   }

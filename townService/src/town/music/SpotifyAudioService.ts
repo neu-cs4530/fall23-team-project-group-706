@@ -116,16 +116,17 @@ class SpotifyAudioService {
   }
 
   // unpauses or starts playing the music
-  async playTrack(songURI: string): Promise<void> {
+  async playTrack(songName: string): Promise<void> {
     const playEndpoint = `https://api.spotify.com/v1/me/player/play`;
     try {
+      const trackUri = await this.searchSongs(songName);
       const response = await fetch(playEndpoint, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${this.getAccessToken(this._code).toString()}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ uris: [songURI] }),
+        body: JSON.stringify({ uris: [trackUri] }),
       });
 
       if (!response.ok) {
