@@ -8,10 +8,10 @@ import InteractableAreaController, { BaseInteractableEventMap } from './Interact
 import { MusicArea as MusicAreaModel } from '../../types/CoveyTownSocket';
 
 export type MusicEventTypes = BaseInteractableEventMap & {
-  // gameStart: () => void;
-  // gameUpdated: () => void;
-  // gameEnd: () => void;
-  // playersChange: (newPlayers: PlayerController[]) => void;
+  gameStart: () => void;
+  gameUpdated: () => void;
+  gameEnd: () => void;
+  playersChange: (newPlayers: PlayerController[]) => void;
 };
 
 /**
@@ -49,70 +49,79 @@ export default abstract class MusicAreaController<
    * @throws An error if the server rejects the request to join the session.
    */
   public async joinSession() {
-    // const { gameID } = await this._townController.sendInteractableCommand(this.id, {
-    //   type: 'JoinGame',
-    // });
-    // this._instanceID = gameID;
+    //TODO check surrounding area as specification asks for
+    const { gameID } = await this._townController.sendInteractableCommand(this.id, {
+      type: 'JoinGame',
+    });
+    this._instanceID = gameID;
   }
 
   /**
    * Sends a request to the server to leave the current music session in the game area.
    */
   public async leaveSession() {
-    // const instanceID = this._instanceID;
-    // if (instanceID) {
-    //   await this._townController.sendInteractableCommand(this.id, {
-      
-    //  });
-    //}
+    const instanceID = this._instanceID;
+    if (instanceID) {
+      await this._townController.sendInteractableCommand(this.id, {
+        type: "LeaveGame",
+        gameID: instanceID
+     });
+    }
   }
 
   /**
-   * 
+   *
    * Allows a user to pause any music in the current music session in the game area.
    */
   public async pauseMusic() {
-    
+    await this._townController.sendInteractableCommand(this.id,{
+      type: "PauseMuisc"
+    })
   }
   /**
-   * 
+   *
    * Allows a user to play any music in the current music session in the game area.
    */
 
   public async playMusic() {
-
-
+    await this._townController.sendInteractableCommand(this.id, {
+      type: "PlayMusic"
+    })
   }
 
   /**
-   * 
+   *
    * Allows a user to skip any music in the current music session in the game area.
    */
 
   public async skipForward() {
-
-
+    await this._townController.sendInteractableCommand(this.id, {
+      type: "SkipSong"
+    })
   }
 /**
-   * 
+   *
    * Allows a user to skip back to any music in the current music session in the game area.
    */
 
   public async skipBackward() {
-
-
+  await this._townController.sendInteractableCommand(this.id, {
+    type: "PreviousSong"
+  })
   }
   /**
-   * 
+   *
    * Allows a user to add any music in the current music session in the game area.
    */
 
-  public async addToQueue() {
-
-
+  public async addToQueue(song: string) {
+    await this._townController.sendInteractableCommand(this.id, {
+      type: "AddToQueue",
+      song: song
+    })
   }
   protected _updateFrom(newModel: MusicAreaModel): void {
-    
+    this._model = newModel
   }
 
   toInteractableAreaModel(): MusicAreaModel {
