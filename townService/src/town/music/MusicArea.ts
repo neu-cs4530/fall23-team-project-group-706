@@ -144,5 +144,8 @@ export default class MusicArea {
   public async addToQueue(songName: string): Promise<void> {
     this._qSong.push(await this.search(songName));
     this._currentSongIndex++;
+    if (this._qSong.length === 1) {
+      this.play();
+    }
   }
 }

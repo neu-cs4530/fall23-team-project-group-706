@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 class SpotifyAudioService {
-  private readonly _BASE_URL = 'https://api.spotify.com/v1';
+  public readonly _BASE_URL = 'https://api.spotify.com/v1';
 
-  private readonly AUTH_URL = 'https://accounts.spotify.com/authorize';
+  public readonly AUTH_URL = 'https://accounts.spotify.com/authorize';
 
-  private readonly TOKEN_URL = 'https://accounts.spotify.com/api/token';
+  public readonly TOKEN_URL = 'https://accounts.spotify.com/api/token';
 
   private _clientId: string;
 
@@ -116,17 +116,16 @@ class SpotifyAudioService {
   }
 
   // unpauses or starts playing the music
-  async playTrack(songName: string): Promise<void> {
+  async playTrack(songURI: string): Promise<void> {
     const playEndpoint = `https://api.spotify.com/v1/me/player/play`;
     try {
-      const trackUri = await this.searchSongs(songName);
       const response = await fetch(playEndpoint, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${this.getAccessToken(this._code).toString()}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ uris: [trackUri] }),
+        body: JSON.stringify({ uris: [songURI] }),
       });
 
       if (!response.ok) {
