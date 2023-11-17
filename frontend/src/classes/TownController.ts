@@ -788,7 +788,7 @@ export function useInteractableAreaController<T>(interactableAreaID: string): T 
   const interactableAreaController2 = townController.musicAreas.find(
     eachArea => eachArea.id == interactableAreaID,
   );
-  if (!interactableAreaController) {
+  if (!interactableAreaController && !interactableAreaController2) {
     throw new Error(`Requested interactable area ${interactableAreaID} does not exist`);
   }
   return interactableAreaController as unknown as T;
