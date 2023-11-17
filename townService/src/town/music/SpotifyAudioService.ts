@@ -78,7 +78,7 @@ class SpotifyAudioService {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const data: SpotifyTokenResponse = await response.json();
+      const data = await response.json();
       return data.access_token;
     } catch (error) {
       console.error('Error obtaining access token:', error);
