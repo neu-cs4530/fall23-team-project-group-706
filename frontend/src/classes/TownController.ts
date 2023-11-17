@@ -27,7 +27,7 @@ import {
   TownSettingsUpdate,
   ViewingArea as ViewingAreaModel,
 } from '../types/CoveyTownSocket';
-import { isConversationArea, isTicTacToeArea, isViewingArea } from '../types/TypeUtils';
+import { isConversationArea, isTicTacToeArea, isViewingArea, isMusicArea } from '../types/TypeUtils';
 import ConversationAreaController from './interactable/ConversationAreaController';
 import GameAreaController, { GameEventTypes } from './interactable/GameAreaController';
 import MusicAreaController, { MusicEventTypes } from './interactable/MusicAreaController';
@@ -332,6 +332,15 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
     return ret as GameAreaController<GameState, GameEventTypes>[];
   }
 
+
+  public get musicAreas() {
+    const ret = this._interactableControllers.filter(
+      eachInteractable => eachInteractable instanceof MusicAreaController,
+    );
+    return ret as MusicAreaController<MusicEventTypes>[];
+  }
+
+
   /**
    * Begin interacting with an interactable object. Emits an event to all listeners.
    * @param interactedObj
@@ -607,6 +616,10 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
             this._interactableControllers.push(
               new TicTacToeAreaController(eachInteractable.id, eachInteractable, this),
             );
+          }  else if (isMusicArea(eachInteractable)) {
+            this._interactableControllers.push(
+              new MusicAreaController(eachInteractable.id, eachInteractable, this),
+            );
           }
         });
         this._userID = initialData.userID;
@@ -671,10 +684,10 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
   }
 
   /**
-     * Retrives the game area controller corresponding to a game area by ID, or
-     * throws an error if the game area controller does not exist
+     * Retrives the music area controller corresponding to a music area by ID, or
+     * throws an error if the music area controller does not exist
      *
-     * @param gameArea
+     * @param musicArea
      * @returns
      */
   public getMusicAreaController<EventsType extends MusicEventTypes>(
@@ -770,6 +783,9 @@ export function useTownSettings() {
 export function useInteractableAreaController<T>(interactableAreaID: string): T {
   const townController = useTownController();
   const interactableAreaController = townController.gameAreas.find(
+    eachArea => eachArea.id == interactableAreaID,
+  );
+  const interactableAreaController2 = townController.musicAreas.find(
     eachArea => eachArea.id == interactableAreaID,
   );
   if (!interactableAreaController) {

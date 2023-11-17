@@ -19,9 +19,14 @@ export type MusicEventTypes = BaseInteractableEventMap & {
  * state of the game, and for sending commands to the server to update the state of the game.
  * It is also responsible for notifying the UI when the state of the game changes, by emitting events.
  */
-export default abstract class MusicAreaController<
+export default class MusicAreaController<
   EventTypes extends MusicEventTypes,
   > extends InteractableAreaController<EventTypes, MusicAreaModel> {
+  
+  public isActive(): boolean {
+    return true; // placeholder for testing
+  }
+
   protected _players: PlayerController[] = [];
 
   protected _townController: TownController;
