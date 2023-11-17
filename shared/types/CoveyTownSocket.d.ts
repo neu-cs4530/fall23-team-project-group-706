@@ -134,9 +134,6 @@ export interface GameResult {
   scores: { [playerName: string]: number };
 }
 
-export interface MusicHistory {
-  songs: { [songName: string]: number};
-}
 
 /**
  * Base type for an *instance* of a game. An instance of a game
@@ -183,7 +180,7 @@ interface InteractableCommandBase {
 }
 
 export type InteractableCommand =  ViewingAreaUpdateCommand | JoinGameCommand | GameMoveCommand<TicTacToeMove> | LeaveGameCommand | JoinMusicCommand |
-PlayMusicCommand | PauseMusicCommand | AddToQueueCommand | SearchSongCommand | SkipSongCommand | PreviousSongCommand;
+PlayMusicCommand | PauseMusicCommand | AddToQueueCommand | SearchSongCommand | SkipSongCommand | PreviousSongCommand | VotingCommand;
 
 
 export interface ViewingAreaUpdateCommand  {
@@ -224,6 +221,11 @@ export interface PreviousSongCommand {
   type: 'PreviousSong';
 }
 
+export interface VotingCommand {
+  type: 'VoteSong';
+  song: string;
+}
+
 export interface LeaveGameCommand {
   type: 'LeaveGame';
   gameID: GameInstanceID;
@@ -243,7 +245,7 @@ export type InteractableCommandReturnType<CommandType extends InteractableComman
   CommandType extends PauseMusicCommand ? undefined :
   CommandType extends AddToQueueCommand ? undefined :
   CommandType extends SearchSongCommand ? undefined :
-  CommandType extends LeaveGameCommand ? undefined :
+  CommandType extends VotingCommand ? undefined :
   never;
 
 export type InteractableCommandResponse<MessageType> = {

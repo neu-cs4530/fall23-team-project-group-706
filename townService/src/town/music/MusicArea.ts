@@ -2,7 +2,6 @@ import InvalidParametersError from '../../lib/InvalidParametersError';
 import {
   InteractableCommand,
   InteractableCommandReturnType,
-  MusicHistory,
   Player,
 } from '../../types/CoveyTownSocket';
 
@@ -21,7 +20,7 @@ export default class MusicArea {
 
   private _players: string[] = [];
 
-  private _history: MusicHistory[] = [];
+  private _voting: Map<string, number> = new Map();
 
   // index to track currently playing song
   private _currentSongIndex = 0;
@@ -67,6 +66,8 @@ export default class MusicArea {
       this.back();
     } else if (command.type === 'PauseMuisc') {
       this.pause();
+    } else if (command.type === 'VoteSong') {
+      this.voting(command.song);
     }
     return undefined as InteractableCommandReturnType<CommandType>;
   }
@@ -130,6 +131,12 @@ export default class MusicArea {
       this._currentSongIndex = this._qSong.length - 1;
     }
     this._spotify.playTrack(this.getCurrentTrackID());
+  }
+
+  public voting(songName: string): void {
+    let playCount = this._voting.get(songName) || 0;
+    playCount++;
+    this._voting.set(songName, playCount);
   }
 
   // finished: add to queue based on song name search, updates index
