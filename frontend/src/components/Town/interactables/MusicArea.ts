@@ -1,7 +1,7 @@
 import Interactable, { KnownInteractableTypes } from '../Interactable';
 import { BoundingBox } from '../../../types/CoveyTownSocket';
 
-export default class MusicArea extends Interactable {
+export default class MusicAreaInteractble extends Interactable {
   private _isInteracting = false;
 
   addedToScene() {
