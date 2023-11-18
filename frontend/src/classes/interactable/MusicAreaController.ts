@@ -1,17 +1,17 @@
-import _ from 'lodash';
+import _, { map } from 'lodash';
 import {
-  InteractableID,
+  InteractableID, MusicAreaID,
 } from '../../types/CoveyTownSocket';
 import PlayerController from '../PlayerController';
 import TownController from '../TownController';
 import InteractableAreaController, { BaseInteractableEventMap } from './InteractableAreaController';
-import { MusicArea as MusicAreaModel } from '../../types/CoveyTownSocket';
+import { MusicArea} from '../../types/CoveyTownSocket';
+
 
 export type MusicEventTypes = BaseInteractableEventMap & {
-  // gameStart: () => void;
-  // gameUpdated: () => void;
-  // gameEnd: () => void;
-  // playersChange: (newPlayers: PlayerController[]) => void;
+  songAddedToQueue: (queue: string[]) => void;
+  musicUpdated: () => void;
+  votingUpdated: (votingHist: Map<string, number>) => void;
 };
 
 /**
@@ -21,27 +21,44 @@ export type MusicEventTypes = BaseInteractableEventMap & {
  */
 export default abstract class MusicAreaController<
   EventTypes extends MusicEventTypes,
-  > extends InteractableAreaController<EventTypes, MusicAreaModel> {
-  protected _players: PlayerController[] = [];
-
+  > extends InteractableAreaController<EventTypes, MusicArea> {
   protected _townController: TownController;
 
-  protected _model: MusicAreaModel;
+  protected _model: MusicArea;
 
-  protected _instanceID?: string;
+  protected _instanceID?: MusicAreaID;
 
-  constructor(id: InteractableID, MusicArea: MusicAreaModel, townController: TownController) {
+  protected _players: PlayerController[] = [];
+
+  protected _queue: string[] = [];
+
+  protected _votingHistory: Map<string, number> = new Map<string, number>();
+
+
+  constructor(id: InteractableID, musicArea: MusicArea, townController: TownController) {
     super(id);
-    this._model = MusicArea;
+    this._model = musicArea;
     this._townController = townController;
+
+    if (musicArea.music && musicArea.queue) {
+      this._queue = musicArea.queue;
+    }
+
+    if (musicArea.music && musicArea.voting) {
+      this._votingHistory = musicArea.voting;
+    }
   }
 
   get players(): PlayerController[] {
     return this._players;
   }
 
-  public get observers(): PlayerController[] {
-    return this.occupants.filter(eachOccupant => !this._players.includes(eachOccupant));
+  get queue(): string[] {
+    return this._queue;
+  }
+
+  get votingHistory(): Map<string, number> {
+    return this._votingHistory;
   }
 
   /**
@@ -49,73 +66,90 @@ export default abstract class MusicAreaController<
    * @throws An error if the server rejects the request to join the session.
    */
   public async joinSession() {
-    // const { gameID } = await this._townController.sendInteractableCommand(this.id, {
-    //   type: 'JoinGame',
-    // });
-    // this._instanceID = gameID;
+    const { musicID } = await this._townController.sendInteractableCommand(this.id, {
+      type: 'JoinMusic',
+    });
+    this._instanceID = musicID;
   }
 
   /**
-   * Sends a request to the server to leave the current music session in the game area.
-   */
-  public async leaveSession() {
-    // const instanceID = this._instanceID;
-    // if (instanceID) {
-    //   await this._townController.sendInteractableCommand(this.id, {
-      
-    //  });
-    //}
-  }
-
-  /**
-   * 
+   *
    * Allows a user to pause any music in the current music session in the game area.
    */
   public async pauseMusic() {
-    
+    await this._townController.sendInteractableCommand(this.id,{
+      type: "PauseMuisc"
+    })
   }
   /**
-   * 
+   *
    * Allows a user to play any music in the current music session in the game area.
    */
 
   public async playMusic() {
-
-
+    await this._townController.sendInteractableCommand(this.id, {
+      type: "PlayMusic"
+    })
   }
 
   /**
-   * 
+   *
    * Allows a user to skip any music in the current music session in the game area.
    */
 
   public async skipForward() {
-
-
+    await this._townController.sendInteractableCommand(this.id, {
+      type: "SkipSong"
+    })
   }
-/**
-   * 
+
+  /**
+   *
    * Allows a user to skip back to any music in the current music session in the game area.
    */
 
   public async skipBackward() {
-
-
+    await this._townController.sendInteractableCommand(this.id, {
+      type: "PreviousSong"
+    })
   }
+
   /**
-   * 
+   *
    * Allows a user to add any music in the current music session in the game area.
    */
 
-  public async addToQueue() {
-
-
+  public async addToQueue(song: string) {
+    await this._townController.sendInteractableCommand(this.id, {
+      type: "AddToQueue",
+      song: song
+    })
   }
-  protected _updateFrom(newModel: MusicAreaModel): void {
-    
+  
+  // add the emit for updating the players in there
+  protected _updateFrom(newModel: MusicArea): void {  
+    const newSongs = newModel.queue ?? [];
+    if (!_.isEqual(this.queue.length, newModel.queue.length) ||
+    _.xor(newSongs, this._queue).length > 0) {
+      this._queue = newSongs;
+      //eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      this.emit('songAddedToQueue', newSongs)
+    }
+    if (!_.isEqual(newModel.voting, this._votingHistory)) {
+      this._votingHistory = newModel.voting ?? new Map<string, number>();
+
+      //eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      this.emit('votingUpdated', newModel.voting)
+    }
+    this._model = newModel;
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    this.emit('musicUpdated');
   }
 
-  toInteractableAreaModel(): MusicAreaModel {
+  toInteractableAreaModel(): MusicArea {
     return this._model;
   }
 }

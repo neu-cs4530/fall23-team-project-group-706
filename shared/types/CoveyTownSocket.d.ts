@@ -73,15 +73,16 @@ export interface ViewingArea extends Interactable {
   elapsedTimeSec: number;
 }
 
-export type MusicArea = Interactable;
 
 export type GameStatus = 'IN_PROGRESS' | 'WAITING_TO_START' | 'OVER';
+
+export type MusicStatus = 'NOT_STARTED_PLAYING' | 'CAN_START_PLAYING'  | 'PLAYING' | 'PAUSED';
 /**
  * Base type for the state of a game
  */
 export interface GameState {
   status: GameStatus;
-} 
+}
 
 /**
  * Type for the state of a game that can be won
@@ -124,7 +125,7 @@ export interface TicTacToeGameState extends WinnableGameState {
 
 export type InteractableID = string;
 export type GameInstanceID = string;
-// export type MusicAreaID = string;
+export type MusicAreaID = string;
 
 /**
  * Type for the result of a game
@@ -155,6 +156,18 @@ export interface GameInstance<T extends GameState> {
 export interface GameArea<T extends GameState> extends Interactable {
   game: GameInstance<T> | undefined;
   history: GameResult[];
+}
+
+export interface MusicInstanace {
+  state: 'NOT_STARTED_PLAYING' | MusicStatus;
+  id: MusicAreaID;
+  players: PlayerID[];
+}
+
+export interface MusicArea extends Interactable {
+  music: MusicInstanace | undefined;
+  queue: string[];
+  voting: Map<string, number>;
 }
 
 export type CommandID = string;
@@ -240,7 +253,7 @@ export type InteractableCommandReturnType<CommandType extends InteractableComman
   CommandType extends ViewingAreaUpdateCommand ? undefined :
   CommandType extends GameMoveCommand<TicTacToeMove> ? undefined :
   CommandType extends LeaveGameCommand ? undefined :
-  CommandType extends JoinMusicCommand ? undefined :
+  CommandType extends JoinMusicCommand ? { musicID: string} :
   CommandType extends PlayMusicCommand ? undefined :
   CommandType extends PauseMusicCommand ? undefined :
   CommandType extends AddToQueueCommand ? undefined :
