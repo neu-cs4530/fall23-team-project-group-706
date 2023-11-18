@@ -4,6 +4,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import express from 'express';
 import { URLSearchParams } from 'url';
+import MusicArea from './MusicArea';
 
 const app = express();
 const port = 3000;

@@ -1,41 +1,50 @@
+import { nanoid } from 'nanoid';
 import InvalidParametersError from '../../lib/InvalidParametersError';
 import {
   InteractableCommand,
   InteractableCommandReturnType,
+  InteractableType,
+  MusicAreaID,
+  MusicStatus,
   Player,
 } from '../../types/CoveyTownSocket';
 
 /* eslint-disable @typescript-eslint/no-useless-constructor */
 export default class MusicArea {
-  // for play/pause
-  private _isPlaying = false;
+  public readonly id: MusicAreaID;
+
+  public status: MusicStatus;
+
+  // private _isPlaying = false;
 
   private _message = '';
 
-  // our spotify connection
   private _spotify: SpotifyAudioService;
 
-  // queue of song URIs
   private _qSong: string[] = [];
 
-  private _players: string[] = [];
+  private _players: Player[] = [];
 
   private _voting: Map<string, number> = new Map();
 
-  // index to track currently playing song
   private _currentSongIndex = 0;
 
-  // initialize with spotify connection
   constructor(spotify: SpotifyAudioService) {
+    this.id = nanoid() as MusicAreaID;
     this._spotify = spotify;
+    this.status = 'NOT_STARTED_PLAYING';
   }
 
-  public get paused(): boolean {
-    return !this._isPlaying;
-  }
+  // get paused(): boolean {
+  //   return !this._isPlaying;
+  // }
 
-  public get playing(): boolean {
-    return !this.paused;
+  // get playing(): boolean {
+  //   return this.paused;
+  // }
+
+  public get votingHist(): Map<string, number> {
+    return this._voting;
   }
 
   public get queue(): string[] {
@@ -46,6 +55,10 @@ export default class MusicArea {
     return this._currentSongIndex;
   }
 
+  protected getType(): InteractableType {
+    return 'MusicArea';
+  }
+
   // todo: handle command, see tictactoegamearea.ts
   public handleCommand<CommandType extends InteractableCommand>(
     command: CommandType,
@@ -54,7 +67,9 @@ export default class MusicArea {
     // something like this
     if (command.type === 'JoinMusic') {
       this.join(player);
-    } else if (command.type === 'PlayMusic') {
+      return { musicID: this.id } as InteractableCommandReturnType<CommandType>;
+    }
+    if (command.type === 'PlayMusic') {
       this.play();
     } else if (command.type === 'AddToQueue') {
       this.addToQueue(command.song);
@@ -75,12 +90,15 @@ export default class MusicArea {
   // todo: do we need player?
   // to display which players are there then yes, just created a player array to add players
   public join(player: Player): void {
-    try {
-      this._spotify.getAuthUrl();
-    } catch (error) {
-      this._message = `${(error as Error).message}`;
+    if (this.status === 'NOT_STARTED_PLAYING') {
+      try {
+        this._spotify.getAuthUrl();
+      } catch (error) {
+        this._message = `${(error as Error).message}`;
+      }
+      this._players.push(player);
+      this.status = 'CAN_START_PLAYING';
     }
-    this._players.push(player.id);
   }
 
   // finished: searches for a song based on name and returns uri
@@ -96,14 +114,21 @@ export default class MusicArea {
 
   // finished: resume the player
   public play(): void {
-    this._isPlaying = true;
-    this._spotify.playTrack(this.getCurrentTrackID());
+    // this._isPlaying = true;
+    if (this.status !== 'NOT_STARTED_PLAYING') {
+      this._spotify.playTrack(this.getCurrentTrackID());
+      this.status = 'PLAYING';
+    }
   }
 
   // finished: pause the player
   public pause(): void {
-    this._isPlaying = false;
-    this._spotify.pauseTrack();
+    // this._isPlaying = false;
+
+    if (this.status === 'PLAYING') {
+      this._spotify.pauseTrack();
+      this.status = 'PAUSED';
+    }
   }
 
   // finished: skip to next song in queue, updates index
