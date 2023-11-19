@@ -7,7 +7,7 @@ import { Callback } from '../VideoCall/VideoFrontend/types';
 import Interactable from './Interactable';
 import ConversationArea from './interactables/ConversationArea';
 import GameArea from './interactables/GameArea';
-import MusicArea from './interactables/MusicArea';
+import MusicArea from './interactables/MusicAreaInteractable';
 import Transporter from './interactables/Transporter';
 import ViewingArea from './interactables/ViewingArea';
 
@@ -22,7 +22,7 @@ function interactableTypeForObjectType(type: string): any {
     return ViewingArea;
   } else if (type === 'GameArea') {
     return GameArea;
-  } else if (type === 'MusicArea') {
+  } else if (type === 'MusicArea'){
     return MusicArea;
   } else {
     throw new Error(`Unknown object type: ${type}`);
@@ -98,7 +98,13 @@ export default class TownGameScene extends Phaser.Scene {
   }
 
   preload() {
+<<<<<<< Updated upstream
     this.load.image('Jukebox_32x48', this._resourcePathPrefix + '/assets/tilesets/Jukebox_32x48.png');
+=======
+    this.load.image(
+      'Jukebox_32x48',
+      this._resourcePathPrefix + '/assets/tilesets/Jukebox_32x48.png');
+>>>>>>> Stashed changes
     this.load.image(
       'Room_Builder_32x32',
       this._resourcePathPrefix + '/assets/tilesets/Room_Builder_32x32.png',
