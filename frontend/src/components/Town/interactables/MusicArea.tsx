@@ -31,7 +31,10 @@ import {
     const townController = useTownController();
   
     const [joiningSession, setJoiningSession] = useState(false);
+<<<<<<< Updated upstream
     const [playingSession, setPlayingSession] = useState(false);
+=======
+>>>>>>> Stashed changes
     const [pauseSession, setPauseSession] = useState(false);
     const [currentSong, setCurrentSong] = useState('');
     // const [observers, setObservers] = useState<PlayerController[]>(musicAreaController.observers);
@@ -79,6 +82,7 @@ import {
     
   }
   
+<<<<<<< Updated upstream
   
   
   
@@ -88,6 +92,12 @@ import {
    * A wrapper component for the TicTacToeArea component.
    * Determines if the player is currently in a tic tac toe area on the map, and if so,
    * renders the TicTacToeArea component in a modal.
+=======
+  /**
+   * A wrapper component for the MusicArea component.
+   * Determines if the player is currently in a music area on the map, and if so,
+   * renders the MusicArea component in a modal.
+>>>>>>> Stashed changes
    *
    */
   export default function MusicAreaWrapper(): JSX.Element {

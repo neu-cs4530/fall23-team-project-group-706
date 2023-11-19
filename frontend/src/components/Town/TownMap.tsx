@@ -51,8 +51,13 @@ export default function TownMap(): JSX.Element {
   return (
     <div id='app-container'>
       <NewConversationModal />
-      <TicTacToeAreaWrapper />
       <MusicAreaWrapper />
+      <TicTacToeAreaWrapper />
+<<<<<<< Updated upstream
+      <MusicAreaWrapper />
+=======
+      
+>>>>>>> Stashed changes
       <div id='map-container' />
       <div id='social-container'>
         <SocialSidebar />

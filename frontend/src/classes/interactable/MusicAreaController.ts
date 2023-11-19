@@ -51,6 +51,10 @@ export default class MusicAreaController<
     throw new Error('Method not implemented.');
   }
 
+  public isActive(): boolean {
+    return true
+  }
+
   get players(): PlayerController[] {
     return this._players;
   }
