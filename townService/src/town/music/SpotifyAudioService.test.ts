@@ -5,10 +5,9 @@ global.fetch = jest.fn();
 describe('SpotifyAudioService', () => {
   let spotifyService: SpotifyAudioService;
   const mockClientId = 'mock-client-id';
-  const mockClientSecret = 'mock-client-secret';
 
   beforeEach(() => {
-    spotifyService = new SpotifyAudioService(mockClientId, mockClientSecret);
+    spotifyService = new SpotifyAudioService();
     jest.clearAllMocks();
   });
 
@@ -73,7 +72,7 @@ describe('SpotifyAudioService', () => {
     await spotifyService.pauseTrack();
 
     expect(fetch).toHaveBeenCalledWith(
-      `${spotifyService._BASE_URL}/me/player/pause`,
+      `https://api.spotify.com/v1/me/player/pause`,
       expect.objectContaining({ method: 'PUT' }),
     );
   });

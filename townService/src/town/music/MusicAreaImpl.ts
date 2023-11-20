@@ -12,7 +12,7 @@ export default class MusicAreaImpl extends Music {
   constructor() {
     super({
       status: 'NOT_STARTED_PLAYING',
-      service: new SpotifyAudioService('ferferf', 'sfsfefe'),
+      service: new SpotifyAudioService(),
     });
   }
 
@@ -26,16 +26,15 @@ export default class MusicAreaImpl extends Music {
 
   // todo: do we need player?
   // to display which players are there then yes, just created a player array to add players
-  public join(player: Player): void {
-    if (this.state.status === 'NOT_STARTED_PLAYING') {
-      try {
-        this.state.service.getAuthUrl();
-      } catch (error) {
-        throw new Error(`${(error as Error).message}`);
-      }
-      this.state.status = 'CAN_START_PLAYING';
+  public join(): void {
+    try {
+      this.state.service.getAuthUrl();
+    } catch (error) {
+      throw new Error(`${(error as Error).message}`);
     }
-    super._players.push(player);
+    this.state.status = 'CAN_START_PLAYING';
+
+    // super._players.push(player);
   }
 
   // finished: searches for a song based on name and returns uri

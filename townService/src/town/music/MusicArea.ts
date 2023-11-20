@@ -12,8 +12,8 @@ import MusicAreaImpl from './MusicAreaImpl';
  * A MusicArea is an InteractableArea on the map that can host a game.
  * At any given point in time, there is at most one game in progress in a MusicArea.
  */
-export default class MusicArea extends InteractableArea {
-  protected _music?: MusicAreaImpl;
+export default abstract class MusicArea extends InteractableArea {
+  protected _music?: MusicAreaImpl = new MusicAreaImpl();
 
   protected _queue: string[] = [];
 
@@ -54,8 +54,8 @@ export default class MusicArea extends InteractableArea {
         music = new MusicAreaImpl();
         this._music = music;
       }
-      this._music?.join(player);
-      return { musicID: this.id } as InteractableCommandReturnType<CommandType>;
+      this._music?.join();
+      // return { musicID: this.id } as InteractableCommandReturnType<CommandType>;
     }
     if (command.type === 'PlayMusic') {
       const music = this._music;

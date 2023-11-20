@@ -124,7 +124,7 @@ export interface TicTacToeGameState extends WinnableGameState {
 
 export type InteractableID = string;
 export type GameInstanceID = string;
-export type MusicAreaID = string;
+// export type MusicAreaID = string;
 
 /**
  * Type for the result of a game
@@ -165,7 +165,7 @@ export interface MusicState {
 
 export interface MusicInstanace {
   state: MusicState;
-  id: MusicAreaID;
+  // id: MusicAreaID;
   players: PlayerID[];
   voting: Map<string, number>;
 }
@@ -258,7 +258,7 @@ export type InteractableCommandReturnType<CommandType extends InteractableComman
   CommandType extends ViewingAreaUpdateCommand ? undefined :
   CommandType extends GameMoveCommand<TicTacToeMove> ? undefined :
   CommandType extends LeaveGameCommand ? undefined :
-  CommandType extends JoinMusicCommand ? { musicID: string} :
+  CommandType extends JoinMusicCommand ? undefined :
   CommandType extends PlayMusicCommand ? undefined :
   CommandType extends PauseMusicCommand ? undefined :
   CommandType extends AddToQueueCommand ? undefined :

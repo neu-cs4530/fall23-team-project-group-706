@@ -29,10 +29,6 @@ import {
   function MusicArea({ interactableID }: { interactableID: InteractableID }): JSX.Element  {
     const musicAreaController = useInteractableAreaController<MusicAreaController<MusicEventTypes>>(interactableID);
     const townController = useTownController();
-  
-    const [joiningSession, setJoiningSession] = useState(false);
-    const [pauseSession, setPauseSession] = useState(false);
-    const [currentSong, setCurrentSong] = useState('');
     // const [observers, setObservers] = useState<PlayerController[]>(musicAreaController.observers);
   
     // useEffect(() => {
@@ -70,6 +66,13 @@ import {
                 return <ListItem key={player.id}>{player.userName}</ListItem>;
               })}
             </List> */}
+            <Button bg='lightblue' onClick={ async () => {
+                try {
+                    await musicAreaController.joinSession();
+                } catch (error) {
+                   // 
+                }
+                 }}>Login To Music Player</Button>
           </AccordionPanel>
         </AccordionItem>
       </Accordion>

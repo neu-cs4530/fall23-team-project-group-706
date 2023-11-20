@@ -66,6 +66,73 @@ app.use(
   },
 );
 
+const CLIENTID = process.env.CLIENTID || '';
+const CLIENTSECRET = process.env.CLIENTSECRET || '';
+const REDIRECT_URI = process.env.REDIRECT_URL || '';
+
+function generateRandomString(length: number): string {
+  let text = '';
+  const allALPHA = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  for (let i = 0; i < length; i++) {
+    text += allALPHA.charAt(Math.floor(Math.random() * allALPHA.length));
+  }
+  return text;
+}
+
+const STATE = generateRandomString(16);
+
+app.get('/login', (req, res) => {
+  const scopes = ' streaming user-read-private user-read-email';
+  res.redirect(
+    `https://accounts.spotify.com/authorize?${new URLSearchParams({
+      response_type: 'code',
+      client_id: CLIENTID,
+      scope: scopes,
+      redirect_uri: REDIRECT_URI,
+      state: STATE,
+    })}`,
+  );
+});
+
+app.get('/callback', async (req, res) => {
+  const authorizationCode = req.query.code as string;
+
+  if (!authorizationCode) {
+    return res.status(400).send('Authorization code is required');
+  }
+
+  const tokenUrl = 'https://accounts.spotify.com/api/token';
+  const params = new URLSearchParams({
+    grant_type: 'authorization_code',
+    code: authorizationCode,
+    redirect_uri: REDIRECT_URI,
+    client_id: CLIENTID,
+    client_secret: CLIENTSECRET,
+  });
+
+  try {
+    const response = await fetch(tokenUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Authorization': `Basic ${Buffer.from(`${CLIENTID}:${CLIENTSECRET}`).toString('base64')}`,
+      },
+      body: params,
+    });
+
+    if (!response.ok) {
+      return res.status(404).send('Sonething went wrong in callback');
+    }
+
+    const data = await response.json();
+    res.json(data);
+    return res.status(200).send('worked');
+  } catch (error) {
+    console.error('Error requesting access token:', error);
+    return res.status(500).send('Internal Server Error');
+  }
+});
+
 // Start the configured server, defaulting to port 8081 if $PORT is not set
 server.listen(process.env.PORT || 8081, () => {
   const address = server.address() as AddressInfo;

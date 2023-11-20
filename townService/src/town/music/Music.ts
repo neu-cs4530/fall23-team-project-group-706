@@ -1,18 +1,18 @@
-import { nanoid } from 'nanoid';
+// import { nanoid } from 'nanoid';
 import Player from '../../lib/Player';
-import { MusicAreaID, MusicInstanace, MusicState } from '../../types/CoveyTownSocket';
+import { MusicInstanace, MusicState } from '../../types/CoveyTownSocket';
 
 export default abstract class Music {
   private _state: MusicState;
 
-  public readonly id: MusicAreaID;
+  // public readonly id: MusicAreaID;
 
   private _voting: Map<string, number> = new Map();
 
   protected _players: Player[] = [];
 
   public constructor(state: MusicState) {
-    this.id = nanoid() as MusicAreaID;
+    // this.id = nanoid() as MusicAreaID;
     this._state = state;
   }
 
@@ -31,7 +31,7 @@ export default abstract class Music {
     this._state = state;
   }
 
-  protected abstract join(player: Player): void;
+  protected abstract join(): void;
 
   protected abstract search(songName: string): Promise<string>;
 
@@ -50,7 +50,7 @@ export default abstract class Music {
   public toModel(): MusicInstanace {
     return {
       state: this._state,
-      id: this.id,
+      // id: this.id,
       voting: this.voting,
       players: this._players.map(player => player.id),
     };
