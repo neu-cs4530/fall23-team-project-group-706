@@ -73,10 +73,9 @@ export interface ViewingArea extends Interactable {
   elapsedTimeSec: number;
 }
 
-
 export type GameStatus = 'IN_PROGRESS' | 'WAITING_TO_START' | 'OVER';
 
-export type MusicStatus = 'NOT_STARTED_PLAYING' | 'CAN_START_PLAYING'  | 'PLAYING' | 'PAUSED';
+export type MusicStatus = 'NOT_STARTED_PLAYING' | 'CAN_START_PLAYING' | 'PLAYING' | 'PAUSED';
 /**
  * Base type for the state of a game
  */
@@ -158,16 +157,22 @@ export interface GameArea<T extends GameState> extends Interactable {
   history: GameResult[];
 }
 
+
+export interface MusicState {
+  status: 'NOT_STARTED_PLAYING' | MusicStatus;
+  service: SpotifyAudioService;
+}
+
 export interface MusicInstanace {
-  state: 'NOT_STARTED_PLAYING' | MusicStatus;
+  state: MusicState;
   id: MusicAreaID;
   players: PlayerID[];
+  voting: Map<string, number>;
 }
 
 export interface MusicArea extends Interactable {
   music: MusicInstanace | undefined;
   queue: string[];
-  voting: Map<string, number>;
 }
 
 export type CommandID = string;

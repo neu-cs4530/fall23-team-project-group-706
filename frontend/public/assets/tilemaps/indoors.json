@@ -614,6 +614,12 @@
                  "height":95,
                  "id":53,
                  "name":"Jukebox",
+                 "properties":[
+                     {
+                      "name":"type",
+                      "type":"string",
+                      "value":"MusicArea"
+                     }],
                  "rotation":0,
                  "type":"MusicArea",
                  "visible":true,

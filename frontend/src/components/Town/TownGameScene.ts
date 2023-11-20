@@ -7,7 +7,7 @@ import { Callback } from '../VideoCall/VideoFrontend/types';
 import Interactable from './Interactable';
 import ConversationArea from './interactables/ConversationArea';
 import GameArea from './interactables/GameArea';
-import MusicArea from './interactables/MusicArea';
+import MusicArea from './interactables/MusicAreaInteractable';
 import Transporter from './interactables/Transporter';
 import ViewingArea from './interactables/ViewingArea';
 

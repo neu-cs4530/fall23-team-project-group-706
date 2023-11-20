@@ -21,6 +21,7 @@ import {
 import { logError } from '../Utils';
 import ConversationArea from './ConversationArea';
 import GameAreaFactory from './games/GameAreaFactory';
+import MusicAreaFactory from './music/MusicAreaFactory';
 import InteractableArea from './InteractableArea';
 import ViewingArea from './ViewingArea';
 
@@ -404,10 +405,15 @@ export default class Town {
       .filter(eachObject => eachObject.type === 'GameArea')
       .map(eachGameAreaObj => GameAreaFactory(eachGameAreaObj, this._broadcastEmitter));
 
+    const musicAreas = objectLayer.objects
+      .filter(eachObject => eachObject.type === 'MusicArea')
+      .map(eachMusicAreaObj => MusicAreaFactory(eachMusicAreaObj, this._broadcastEmitter));
+
     this._interactables = this._interactables
       .concat(viewingAreas)
       .concat(conversationAreas)
-      .concat(gameAreas);
+      .concat(gameAreas)
+      .concat(musicAreas);
     this._validateInteractables();
   }
 
