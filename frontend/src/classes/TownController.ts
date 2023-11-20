@@ -603,6 +603,7 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
 
         this._interactableControllers = [];
         initialData.interactables.forEach(eachInteractable => {
+          console.log(eachInteractable);
           if (isConversationArea(eachInteractable)) {
             this._interactableControllers.push(
               ConversationAreaController.fromConversationAreaModel(
@@ -617,6 +618,7 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
               new TicTacToeAreaController(eachInteractable.id, eachInteractable, this),
             );
           }  else if (isMusicArea(eachInteractable)) {
+            console.log(this._interactableControllers);
             this._interactableControllers.push(
               new MusicAreaController(eachInteractable.id, eachInteractable, this),
             );
@@ -785,10 +787,29 @@ export function useInteractableAreaController<T>(interactableAreaID: string): T 
   const interactableAreaController = townController.gameAreas.find(
     eachArea => eachArea.id == interactableAreaID,
   );
-  const interactableAreaController2 = townController.musicAreas.find(
+  if (!interactableAreaController) {
+    throw new Error(`Requested interactable area ${interactableAreaID} does not exist`);
+  }
+  return interactableAreaController as unknown as T;
+}
+
+
+/**
+ * A NEW react hook to retrieve an interactable area controller
+ *
+ * This function will throw an error if the interactable area controller does not exist.
+ *
+ * This hook relies on the TownControllerContext.
+ *
+ * @param interactableAreaID The ID of the interactable area to retrieve the controller for
+ * @throws Error if there is no interactable area controller matching the specified ID
+ */
+export function useInteractableAreaControllerMusic<T>(interactableAreaID: string): T {
+  const townController = useTownController();
+  const interactableAreaController = townController.musicAreas.find(
     eachArea => eachArea.id == interactableAreaID,
   );
-  if (!interactableAreaController && !interactableAreaController2) {
+  if (!interactableAreaController) {
     throw new Error(`Requested interactable area ${interactableAreaID} does not exist`);
   }
   return interactableAreaController as unknown as T;

@@ -1,11 +1,12 @@
 import _ from 'lodash';
+
 import {
   InteractableID,
 } from '../../types/CoveyTownSocket';
 import PlayerController from '../PlayerController';
 import TownController from '../TownController';
 import InteractableAreaController, { BaseInteractableEventMap } from './InteractableAreaController';
-import { MusicArea as MusicAreaModel } from '../../types/CoveyTownSocket';
+import { MusicAreaInteractable as MusicAreaModel } from '../../types/CoveyTownSocket';
 
 export type MusicEventTypes = BaseInteractableEventMap & {
   // gameStart: () => void;

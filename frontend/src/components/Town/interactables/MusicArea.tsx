@@ -19,7 +19,7 @@ import {
 } from '@chakra-ui/react';
 import Interactable, { KnownInteractableTypes } from '../Interactable';
 import React, { useCallback, useEffect, useState } from 'react';
-import { useInteractable, useInteractableAreaController } from '../../../classes/TownController';
+import { useInteractable, useInteractableAreaControllerMusic } from '../../../classes/TownController';
 import useTownController from '../../../hooks/useTownController';
 import PlayerController from '../../../classes/PlayerController';
 import MusicAreaController, { MusicEventTypes } from '../../../classes/interactable/MusicAreaController';
@@ -27,7 +27,7 @@ import { InteractableID } from '../../../types/CoveyTownSocket';
 import MusicAreaInteractable from './MusicAreaInteractable';
 
 function MusicArea({ interactableID }: { interactableID: InteractableID }): JSX.Element  {
-  const musicAreaController = useInteractableAreaController<MusicAreaController<MusicEventTypes>>(interactableID);
+  const musicAreaController = useInteractableAreaControllerMusic<MusicAreaController<MusicEventTypes>>(interactableID);
   const townController = useTownController();
 
   const [joiningSession, setJoiningSession] = useState(false);
@@ -64,7 +64,8 @@ function MusicArea({ interactableID }: { interactableID: InteractableID }): JSX.
             </Box>
           </AccordionButton>
         </Heading>
-        <AccordionPanel>
+          <AccordionPanel>
+            
           {/* <List aria-label='list of observers in the game'>
             {observers.map(player => {
               return <ListItem key={player.id}>{player.userName}</ListItem>;
