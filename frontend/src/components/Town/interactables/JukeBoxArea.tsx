@@ -1,3 +1,4 @@
+
 import {
     Accordion,
     AccordionButton,
@@ -8,8 +9,6 @@ import {
     Button,
     Container,
     Heading,
-    List,
-    ListItem,
     Modal,
     ModalCloseButton,
     ModalContent,
@@ -25,29 +24,15 @@ import {
   import MusicAreaController, { MusicEventTypes } from '../../../classes/interactable/MusicAreaController';
   import { InteractableID } from '../../../types/CoveyTownSocket';
   import MusicAreaInteractable from './MusicAreaInteractable';
+  import JukeBoxAreaController from '../../../classes/interactable/JukeBoxAreaController';
+  import MusicApp from './MusicApp';
+
+  const code = new URLSearchParams(window.location.search).get('code');
   
   function MusicArea({ interactableID }: { interactableID: InteractableID }): JSX.Element  {
-    const musicAreaController = useInteractableAreaController<MusicAreaController<MusicEventTypes>>(interactableID);
+    const musicAreaController = useInteractableAreaController<JukeBoxAreaController>(interactableID);
     const townController = useTownController();
-    // const [observers, setObservers] = useState<PlayerController[]>(musicAreaController.observers);
   
-    // useEffect(() => {
-    //   const updateMusicState = () => {
-    //     // set queue status
-    //     // set play or pause status
-    //     // set which song?
-  
-    //     // const [currentSong, setCurrentSong] = useState(musicAreaController.currentSong);
-    //     // setObservers(musicAreaController.observers);
-    //   };
-  
-    //   musicAreaController.addListener('songAddedToQueue', updateMusicState);
-    //   return () => {
-    //     musicAreaController.removeListener('songAddedToQueue', updateMusicState);
-    //   };
-    // }, [townController, musicAreaController]);
-  
-    
     return (
       <Container>
         <Accordion allowToggle>
@@ -66,22 +51,13 @@ import {
                 return <ListItem key={player.id}>{player.userName}</ListItem>;
               })}
             </List> */}
-            <Button bg='lightblue' onClick={ async () => {
-                try {
-                    await musicAreaController.joinSession();
-                } catch (error) {
-                   // 
-                }
-                 }}>Login To Music Player</Button>
+            < MusicApp/>
           </AccordionPanel>
         </AccordionItem>
       </Accordion>
     </Container>
     );
-    
   }
-  
-  
   
   /**
    * A wrapper component for the MusicaArea component.
@@ -89,7 +65,7 @@ import {
    * renders the MusicArea component in a modal.
    *
    */
-  export default function MusicAreaWrapper(): JSX.Element {
+  export default function JukeBoxAreaWrapper(): JSX.Element {
     const musicArea = useInteractable<MusicAreaInteractable>('musicArea');
     const townController = useTownController();
     const closeModal = useCallback(() => {
@@ -100,9 +76,8 @@ import {
       }
     }, [townController, musicArea]);
   
-    if (musicArea) {
+    if (musicArea && musicArea.getType() === 'musicArea') {
       return (
-      
         <Modal isOpen={true} onClose={closeModal} closeOnOverlayClick={false}>
           <ModalOverlay />
           <ModalContent>

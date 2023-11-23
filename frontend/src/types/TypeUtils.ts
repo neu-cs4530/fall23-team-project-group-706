@@ -4,7 +4,8 @@ import {
   TicTacToeGameState,
   ViewingArea,
   GameArea,
-  MusicArea
+  MusicArea,
+  MusicState
 } from './CoveyTownSocket';
 
 /**
@@ -26,8 +27,8 @@ export function isTicTacToeArea(
 ): interactable is GameArea<TicTacToeGameState> {
   return interactable.type === 'TicTacToeArea';
 }
-export function isMusicArea(
+export function isJukeBoxArea(
   interactable: Interactable,
-): interactable is MusicArea {
-  return interactable.type === 'MusicArea';
+): interactable is MusicArea<MusicState> {
+  return interactable.type === 'JukeBoxArea';
 }

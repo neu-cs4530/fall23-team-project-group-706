@@ -1,6 +1,8 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import Express from 'express';
 import * as http from 'http';
 import CORS from 'cors';
+import * as dotenv from 'dotenv';
 import { AddressInfo } from 'net';
 import swaggerUi from 'swagger-ui-express';
 import { ValidateError } from 'tsoa';
@@ -11,7 +13,9 @@ import TownsStore from './lib/TownsStore';
 import { ClientToServerEvents, ServerToClientEvents } from './types/CoveyTownSocket';
 import { TownsController } from './town/TownsController';
 import { logError } from './Utils';
+import JukeBoxMusic from './town/music/JukeBoxMusic';
 
+dotenv.config();
 // Create the server instances
 const app = Express();
 app.use(CORS());
@@ -19,6 +23,7 @@ const server = http.createServer(app);
 const socketServer = new SocketServer<ClientToServerEvents, ServerToClientEvents>(server, {
   cors: { origin: '*' },
 });
+const service = new JukeBoxMusic();
 
 // Initialize the towns store with a factory that creates a broadcast emitter for a town
 TownsStore.initializeTownsStore((townID: string) => socketServer.to(townID));
@@ -66,70 +71,43 @@ app.use(
   },
 );
 
-const CLIENTID = process.env.CLIENTID || '';
-const CLIENTSECRET = process.env.CLIENTSECRET || '';
-const REDIRECT_URI = process.env.REDIRECT_URL || '';
+// const clientId = process.env.SPOTIFY_CLIENT_ID as string;
+// const redirectUri = process.env.REDIRECT_URI as string;
+const scopes = 'user-read-private user-read-email';
 
-function generateRandomString(length: number): string {
-  let text = '';
-  const allALPHA = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  for (let i = 0; i < length; i++) {
-    text += allALPHA.charAt(Math.floor(Math.random() * allALPHA.length));
-  }
-  return text;
-}
-
-const STATE = generateRandomString(16);
-
-app.get('/login', (req, res) => {
-  const scopes = ' streaming user-read-private user-read-email';
-  res.redirect(
-    `https://accounts.spotify.com/authorize?${new URLSearchParams({
-      response_type: 'code',
-      client_id: CLIENTID,
-      scope: scopes,
-      redirect_uri: REDIRECT_URI,
-      state: STATE,
-    })}`,
-  );
+app.get('/redirect', (req, res) => {
+  const encodedClientId = encodeURIComponent('c7352d2289f4409c8f20675c19846d05');
+  const redirect = encodeURIComponent('http://localhost:3000/authorize');
+  const authUrl = `https://accounts.spotify.com/authorize?response_type=code&client_id=${encodedClientId}&&scope=${encodeURIComponent(
+    scopes,
+  )}&redirect_uri=${redirect}`;
+  res.redirect(authUrl);
 });
 
-app.get('/callback', async (req, res) => {
-  const authorizationCode = req.query.code as string;
-
-  if (!authorizationCode) {
-    return res.status(400).send('Authorization code is required');
-  }
-
-  const tokenUrl = 'https://accounts.spotify.com/api/token';
-  const params = new URLSearchParams({
-    grant_type: 'authorization_code',
-    code: authorizationCode,
-    redirect_uri: REDIRECT_URI,
-    client_id: CLIENTID,
-    client_secret: CLIENTSECRET,
-  });
-
+// Define a route for authorization
+app.post('/authorize', async (req, res) => {
   try {
-    const response = await fetch(tokenUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'Authorization': `Basic ${Buffer.from(`${CLIENTID}:${CLIENTSECRET}`).toString('base64')}`,
-      },
-      body: params,
-    });
+    const data = await service.authorize(req.body);
+    res.json(data);
+    res.status(200).json({ message: 'Authorization successful' });
+  } catch (error) {
+    res.status(500).send('Authentication failed');
+  }
+});
 
-    if (!response.ok) {
-      return res.status(404).send('Sonething went wrong in callback');
+// Define a route for searching songs
+app.get('/search', async (req, res) => {
+  try {
+    const query = req.query.q as string;
+
+    if (!query) {
+      res.status(404).send('No query specified');
     }
 
-    const data = await response.json();
-    res.json(data);
-    return res.status(200).send('worked');
+    const response = await service.search(query);
+    res.json(response);
   } catch (error) {
-    console.error('Error requesting access token:', error);
-    return res.status(500).send('Internal Server Error');
+    res.status(500).send((error as Error).message);
   }
 });
 

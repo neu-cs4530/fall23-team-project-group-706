@@ -1,6 +1,6 @@
 import _, { map } from 'lodash';
 import {
-  InteractableID,
+  InteractableID, MusicAreaID, MusicState,
 } from '../../types/CoveyTownSocket';
 import PlayerController from '../PlayerController';
 import TownController from '../TownController';
@@ -19,15 +19,16 @@ export type MusicEventTypes = BaseInteractableEventMap & {
  * state of the game, and for sending commands to the server to update the state of the game.
  * It is also responsible for notifying the UI when the state of the game changes, by emitting events.
  */
-export default class MusicAreaController<
+export default abstract class MusicAreaController<
+  State extends MusicState,
   EventTypes extends MusicEventTypes,
-  > extends InteractableAreaController<EventTypes, MusicArea> {
+  > extends InteractableAreaController<EventTypes, MusicArea<State>> {
   
   protected _townController: TownController;
 
-  protected _model: MusicArea;
+  protected _model: MusicArea<State>;
 
-  // protected _instanceID?: MusicAreaID;
+  protected _instanceID?: MusicAreaID;
 
   protected _players: PlayerController[] = [];
 
@@ -36,22 +37,18 @@ export default class MusicAreaController<
   protected _votingHistory: Map<string, number> = new Map<string, number>();
 
 
-  constructor(id: InteractableID, musicArea: MusicArea, townController: TownController) {
+  constructor(id: InteractableID, musicArea: MusicArea<State>, townController: TownController) {
     super(id);
     this._model = musicArea;
     this._townController = townController;
 
-    if (musicArea.music && musicArea.queue) {
-      this._queue = musicArea.queue;
+    if (musicArea.music && musicArea.music.state.queue) {
+      this._queue = musicArea.music.state.queue;
     }
 
-    if (musicArea.music && musicArea.music.voting) {
-      this._votingHistory = musicArea.music.voting;
+    if (musicArea.music && musicArea.music.state.voting) {
+      this._votingHistory = musicArea.music.state.voting;
     }
-  }
-
-  public isActive(): boolean {
-    return true;
   }
 
   get players(): PlayerController[] {
@@ -71,11 +68,11 @@ export default class MusicAreaController<
    * Sends a request to the server to join the current listening session in the music area, or create a new one if there is no queue in progress.
    * @throws An error if the server rejects the request to join the session.
    */
-  public async joinSession() {
+  public async joinSession(code: string) {
     await this._townController.sendInteractableCommand(this.id, {
       type: 'JoinMusic',
+      code: code,
     });
-    // this._instanceID = musicID;
   }
 
   /**
@@ -94,7 +91,8 @@ export default class MusicAreaController<
 
   public async playMusic() {
     await this._townController.sendInteractableCommand(this.id, {
-      type: "PlayMusic"
+      type: "PlayMusic",
+      song: 'song'
     })
   }
 
@@ -133,17 +131,17 @@ export default class MusicAreaController<
   }
   
   // add the emit for updating the players in there
-  protected _updateFrom(newModel: MusicArea): void {  
-    const newSongs = newModel.queue ?? [];
-    if (!_.isEqual(this.queue.length, newModel.queue.length) ||
+  protected _updateFrom(newModel: MusicArea<State>): void {  
+    const newSongs = newModel.music?.state.queue ?? [];
+    if (!_.isEqual(this.queue.length, newModel.music?.state.queue.length) ||
     _.xor(newSongs, this._queue).length > 0) {
       this._queue = newSongs;
       //eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       this.emit('songAddedToQueue', newSongs)
     }
-    if (!_.isEqual(newModel.music?.voting, this._votingHistory)) {
-      this._votingHistory = newModel.music?.voting ?? new Map<string, number>();
+    if (!_.isEqual(newModel.music?.state.voting, this._votingHistory)) {
+      this._votingHistory = newModel.music?.state.voting ?? new Map<string, number>();
 
       //eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
@@ -155,7 +153,7 @@ export default class MusicAreaController<
     this.emit('musicUpdated');
   }
 
-  toInteractableAreaModel(): MusicArea {
+  toInteractableAreaModel(): MusicArea<State> {
     return this._model;
   }
 }

@@ -613,12 +613,12 @@
                 {
                  "height":95,
                  "id":53,
-                 "name":"Jukebox",
+                 "name":"Juke Box",
                  "properties":[
                      {
                       "name":"type",
                       "type":"string",
-                      "value":"MusicArea"
+                      "value":"JukeBox"
                      }],
                  "rotation":0,
                  "type":"MusicArea",

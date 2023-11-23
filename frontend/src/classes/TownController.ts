@@ -22,12 +22,13 @@ import {
   InteractableCommandBase,
   InteractableCommandResponse,
   InteractableID,
+  MusicState,
   PlayerID,
   PlayerLocation,
   TownSettingsUpdate,
   ViewingArea as ViewingAreaModel,
 } from '../types/CoveyTownSocket';
-import { isConversationArea, isTicTacToeArea, isViewingArea, isMusicArea } from '../types/TypeUtils';
+import { isConversationArea, isTicTacToeArea, isViewingArea, isJukeBoxArea } from '../types/TypeUtils';
 import ConversationAreaController from './interactable/ConversationAreaController';
 import GameAreaController, { GameEventTypes } from './interactable/GameAreaController';
 import MusicAreaController, { MusicEventTypes } from './interactable/MusicAreaController';
@@ -37,6 +38,7 @@ import InteractableAreaController, {
 import TicTacToeAreaController from './interactable/TicTacToeAreaController';
 import ViewingAreaController from './interactable/ViewingAreaController';
 import PlayerController from './PlayerController';
+import JukeBoxAreaController from './interactable/JukeBoxAreaController';
 
 const CALCULATE_NEARBY_PLAYERS_DELAY_MS = 300;
 const SOCKET_COMMAND_TIMEOUT_MS = 5000;
@@ -337,7 +339,7 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
     const ret = this._interactableControllers.filter(
       eachInteractable => eachInteractable instanceof MusicAreaController,
     );
-    return ret as MusicAreaController<MusicEventTypes>[];
+    return ret as MusicAreaController<MusicState, MusicEventTypes>[];
   }
 
 
@@ -616,9 +618,9 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
             this._interactableControllers.push(
               new TicTacToeAreaController(eachInteractable.id, eachInteractable, this),
             );
-          }  else if (isMusicArea(eachInteractable)) {
+          }  else if (isJukeBoxArea(eachInteractable)) {
             this._interactableControllers.push(
-              new MusicAreaController(eachInteractable.id, eachInteractable, this),
+              new JukeBoxAreaController(eachInteractable.id, eachInteractable, this),
             );
           }
         });
@@ -692,12 +694,12 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
      */
   public getMusicAreaController<EventsType extends MusicEventTypes>(
     musicArea: MusicArea,
-  ): MusicAreaController<EventsType> {
+  ): MusicAreaController<MusicState, EventsType> {
     const existingController = this._interactableControllers.find(
       eachExistingArea => eachExistingArea.id === musicArea.name,
     );
     if (existingController instanceof MusicAreaController) {
-      return existingController as MusicAreaController<EventsType>;
+      return existingController as MusicAreaController<MusicState, EventsType>;
     } else {
       throw new Error('Music area controller not created');
     }

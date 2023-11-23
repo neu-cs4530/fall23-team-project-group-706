@@ -1,57 +1,49 @@
-// import { nanoid } from 'nanoid';
+import { nanoid } from 'nanoid';
 import Player from '../../lib/Player';
-import { MusicInstanace, MusicState } from '../../types/CoveyTownSocket';
+import { MusicAreaID, MusicInstanace, MusicState } from '../../types/CoveyTownSocket';
 
-export default abstract class Music {
-  private _state: MusicState;
+export default abstract class Music<StateType extends MusicState> {
+  private _state: StateType;
 
-  // public readonly id: MusicAreaID;
-
-  private _voting: Map<string, number> = new Map();
+  public readonly id: MusicAreaID;
 
   protected _players: Player[] = [];
 
-  public constructor(state: MusicState) {
-    // this.id = nanoid() as MusicAreaID;
+  public constructor(state: StateType) {
+    this.id = nanoid() as MusicAreaID;
     this._state = state;
-  }
-
-  /**
-   * getting the voting
-   */
-  public get voting(): Map<string, number> {
-    return this._voting;
   }
 
   public get state() {
     return this._state;
   }
 
-  public set state(state: MusicState) {
+  public set state(state: StateType) {
     this._state = state;
   }
 
-  protected abstract join(): void;
+  public abstract authorize(code: string): void;
 
-  protected abstract search(songName: string): Promise<string>;
+  public abstract search(query: string, options: Promise<SpotifyApi.SearchResponse>): void;
 
-  protected abstract getCurrentTrackID(): string;
+  public abstract getCurrentTrackID(): string | null;
 
-  protected abstract play(): void;
+  public abstract addSongToQueue(songName: string): void;
 
-  protected abstract pause(): void;
+  public abstract playSong(songUri: string): void;
 
-  protected abstract skip(): void;
+  public abstract pauseSong(): void;
 
-  protected abstract back(): void;
+  public abstract skip(): void;
 
-  protected abstract votingSong(songName: string): void;
+  public abstract back(): void;
 
-  public toModel(): MusicInstanace {
+  public abstract votingSong(songName: string): void;
+
+  public toModel(): MusicInstanace<StateType> {
     return {
       state: this._state,
-      // id: this.id,
-      voting: this.voting,
+      id: this.id,
       players: this._players.map(player => player.id),
     };
   }

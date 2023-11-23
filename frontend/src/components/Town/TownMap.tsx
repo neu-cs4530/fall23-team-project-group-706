@@ -6,7 +6,7 @@ import SocialSidebar from '../SocialSidebar/SocialSidebar';
 import NewConversationModal from './interactables/NewCoversationModal';
 import TownGameScene from './TownGameScene';
 import TicTacToeAreaWrapper from './interactables/TicTacToe/TicTacToeArea';
-import MusicAreaWrapper from './interactables/MusicArea';
+import JukeBoxAreaWrapper from './interactables/JukeBoxArea';
 
 
 export default function TownMap(): JSX.Element {
@@ -51,7 +51,7 @@ export default function TownMap(): JSX.Element {
   return (
     <div id='app-container'>
       <NewConversationModal />
-      <MusicAreaWrapper />
+      <JukeBoxAreaWrapper />
       <TicTacToeAreaWrapper />
       
       <div id='map-container' />

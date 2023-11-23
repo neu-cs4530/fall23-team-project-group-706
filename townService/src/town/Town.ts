@@ -13,6 +13,7 @@ import {
   Interactable,
   InteractableCommand,
   InteractableCommandBase,
+  MusicArea,
   PlayerLocation,
   ServerToClientEvents,
   SocketData,
@@ -24,6 +25,8 @@ import GameAreaFactory from './games/GameAreaFactory';
 import MusicAreaFactory from './music/MusicAreaFactory';
 import InteractableArea from './InteractableArea';
 import ViewingArea from './ViewingArea';
+import JukeBoxMusic from './music/JukeBoxMusic';
+import JukeBoxMusicArea from './music/JukeBoxMusicArea';
 
 /**
  * The Town class implements the logic for each town: managing the various events that

@@ -1,10 +1,10 @@
 import { ITiledMapObject } from '@jonbell/tiled-map-type-guard';
 import { BoundingBox, TownEmitter } from '../../types/CoveyTownSocket';
 import InteractableArea from '../InteractableArea';
-import MusicArea from './MusicArea';
+import JukeBoxMusicArea from './JukeBoxMusicArea';
 
 /**
- * Creates a new GameArea from a map object
+ * Creates a new MusicArea from a map object
  * @param mapObject the map object to create the game area from
  * @param broadcastEmitter a broadcast emitter that can be used to emit updates to players
  * @returns the interactable area
@@ -20,8 +20,8 @@ export default function MusicAreaFactory(
   }
   const rect: BoundingBox = { x: mapObject.x, y: mapObject.y, width, height };
   const gameType = mapObject.properties?.find(prop => prop.name === 'type')?.value;
-  if (gameType === 'MusicArea') {
-    return new MusicArea(name, rect, broadcastEmitter);
+  if (gameType === 'JukeBox') {
+    return new JukeBoxMusicArea(name, rect, broadcastEmitter);
   }
-  throw new Error(`Unknown game area type ${mapObject.class}`);
+  throw new Error(`Unknown music area type ${mapObject.class}`);
 }

@@ -1,3 +1,6 @@
+/* eslint-disable import/no-extraneous-dependencies */
+import SpotifyWebApi from 'spotify-web-api-node';
+
 export type TownJoinResponse = {
   /** Unique ID that represents this player * */
   userID: string;
@@ -17,7 +20,7 @@ export type TownJoinResponse = {
   interactables: TypedInteractable[];
 }
 
-export type InteractableType = 'ConversationArea' | 'ViewingArea' | 'TicTacToeArea' | 'MusicArea';
+export type InteractableType = 'ConversationArea' | 'ViewingArea' | 'TicTacToeArea' | 'JukeBoxArea';
 export interface Interactable {
   type: InteractableType;
   id: InteractableID;
@@ -37,6 +40,17 @@ export interface Player {
   userName: string;
   location: PlayerLocation;
 };
+  
+  // can implement other options that the authorizationCodeGrant method accept
+  interface AuthorizationCodeGrantResponse {
+    body: {
+      'access_token': string;
+      'token_type': string;
+      'scope': string;
+      'expires_in': number;
+      'refresh_token': string;
+    };
+  }
 
 export type XY = { x: number, y: number };
 
@@ -75,12 +89,26 @@ export interface ViewingArea extends Interactable {
 
 export type GameStatus = 'IN_PROGRESS' | 'WAITING_TO_START' | 'OVER';
 
-export type MusicStatus = 'NOT_STARTED_PLAYING' | 'CAN_START_PLAYING' | 'PLAYING' | 'PAUSED';
+export type MusicStatus = boolean;
+
 /**
  * Base type for the state of a game
  */
 export interface GameState {
   status: GameStatus;
+}
+
+/**
+ * Base type for the state of music
+ */
+export interface MusicState {
+  status: MusicStatus;
+  queue: string[];
+  voting: Map<string, number>;
+}
+
+interface ISpotifyService {
+  spotifyApi: SpotifyWebApi;
 }
 
 /**
@@ -124,7 +152,7 @@ export interface TicTacToeGameState extends WinnableGameState {
 
 export type InteractableID = string;
 export type GameInstanceID = string;
-// export type MusicAreaID = string;
+export type MusicAreaID = string;
 
 /**
  * Type for the result of a game
@@ -158,21 +186,19 @@ export interface GameArea<T extends GameState> extends Interactable {
 }
 
 
-export interface MusicState {
-  status: 'NOT_STARTED_PLAYING' | MusicStatus;
-  service: SpotifyAudioService;
-}
+// export interface MusicState {
+//   status: 'NOT_STARTED_PLAYING' | MusicStatus;
+//   service: Spotify;
+// }
 
-export interface MusicInstanace {
-  state: MusicState;
-  // id: MusicAreaID;
+export interface MusicInstanace<T extends MusicState> {
+  state: T;
+  id: MusicAreaID;
   players: PlayerID[];
-  voting: Map<string, number>;
 }
 
-export interface MusicArea extends Interactable {
-  music: MusicInstanace | undefined;
-  queue: string[];
+export interface MusicArea<T extends MusicState> extends Interactable {
+  music: MusicInstanace<T> | undefined;
 }
 
 export type CommandID = string;
@@ -198,7 +224,7 @@ interface InteractableCommandBase {
 }
 
 export type InteractableCommand =  ViewingAreaUpdateCommand | JoinGameCommand | GameMoveCommand<TicTacToeMove> | LeaveGameCommand | JoinMusicCommand |
-PlayMusicCommand | PauseMusicCommand | AddToQueueCommand | SearchSongCommand | SkipSongCommand | PreviousSongCommand | VotingCommand;
+PlayMusicCommand | PauseMusicCommand | AddToQueueCommand | SearchSongCommand | SkipSongCommand | PreviousSongCommand | VotingCommand ;
 
 
 export interface ViewingAreaUpdateCommand  {
@@ -211,10 +237,12 @@ export interface JoinGameCommand {
 
 export interface JoinMusicCommand {
   type: 'JoinMusic';
+  code: string;
 }
 
 export interface PlayMusicCommand {
   type: 'PlayMusic';
+  song: string;
 }
 
 export interface PauseMusicCommand {
@@ -258,7 +286,7 @@ export type InteractableCommandReturnType<CommandType extends InteractableComman
   CommandType extends ViewingAreaUpdateCommand ? undefined :
   CommandType extends GameMoveCommand<TicTacToeMove> ? undefined :
   CommandType extends LeaveGameCommand ? undefined :
-  CommandType extends JoinMusicCommand ? undefined :
+  CommandType extends JoinMusicCommand ?  { musicID: string} :
   CommandType extends PlayMusicCommand ? undefined :
   CommandType extends PauseMusicCommand ? undefined :
   CommandType extends AddToQueueCommand ? undefined :
