@@ -29,8 +29,6 @@ module.exports = {
   },
   ignorePatterns: ['/*.*'],
   rules: {
-    "react-hooks/rules-of-hooks": "error",
-    "react-hooks/exhaustive-deps": "warn",
     'prettier/prettier': 'error',
     "prettier/prettier": 
     [ "error",
