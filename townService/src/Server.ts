@@ -77,6 +77,7 @@ app.use(
   },
 );
 
+<<<<<<< HEAD
 // Function to refresh token
 const refreshAccessToken = async () => {
   try {
@@ -151,6 +152,8 @@ app.post('/queue', async (req, res) => {
   }
 });
 
+=======
+>>>>>>> parent of 4ccf349 (updated files)
 // Start the configured server, defaulting to port 8081 if $PORT is not set
 server.listen(process.env.PORT || 8081, () => {
   const address = server.address() as AddressInfo;

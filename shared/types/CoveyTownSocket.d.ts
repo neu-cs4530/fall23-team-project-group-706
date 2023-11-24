@@ -131,8 +131,12 @@ export interface TicTacToeGameState extends WinnableGameState {
 
 export type InteractableID = string;
 export type GameInstanceID = string;
+<<<<<<< HEAD
 // export type JukeBoxID = string;
 
+=======
+export type MusicAreaID = string;
+>>>>>>> parent of 4ccf349 (updated files)
 
 /**
  * Type for the result of a game
@@ -166,6 +170,26 @@ export interface GameArea<T extends GameState> extends Interactable {
 }
 
 
+<<<<<<< HEAD
+=======
+export interface MusicState {
+  status: 'NOT_STARTED_PLAYING' | MusicStatus;
+  service: SpotifyAudioService;
+}
+
+export interface MusicInstanace {
+  state: MusicState;
+  id: MusicAreaID;
+  players: PlayerID[];
+  voting: Map<string, number>;
+}
+
+export interface MusicArea extends Interactable {
+  music: MusicInstanace | undefined;
+  queue: string[];
+}
+
+>>>>>>> parent of 4ccf349 (updated files)
 export type CommandID = string;
 
 /**
@@ -220,7 +244,16 @@ export type InteractableCommandReturnType<CommandType extends InteractableComman
   CommandType extends ViewingAreaUpdateCommand ? undefined :
   CommandType extends GameMoveCommand<TicTacToeMove> ? undefined :
   CommandType extends LeaveGameCommand ? undefined :
+<<<<<<< HEAD
   CommandType extends MusicAreaUpdatedCommand ? undefined :
+=======
+  CommandType extends JoinMusicCommand ? { musicID: string} :
+  CommandType extends PlayMusicCommand ? undefined :
+  CommandType extends PauseMusicCommand ? undefined :
+  CommandType extends AddToQueueCommand ? undefined :
+  CommandType extends SearchSongCommand ? undefined :
+  CommandType extends VotingCommand ? undefined :
+>>>>>>> parent of 4ccf349 (updated files)
   never;
 
 export type InteractableCommandResponse<MessageType> = {
