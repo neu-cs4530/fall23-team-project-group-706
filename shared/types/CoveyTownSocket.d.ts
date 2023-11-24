@@ -1,6 +1,3 @@
-/* eslint-disable import/no-extraneous-dependencies */
-import SpotifyWebApi from 'spotify-web-api-node';
-
 export type TownJoinResponse = {
   /** Unique ID that represents this player * */
   userID: string;
@@ -20,7 +17,7 @@ export type TownJoinResponse = {
   interactables: TypedInteractable[];
 }
 
-export type InteractableType = 'ConversationArea' | 'ViewingArea' | 'TicTacToeArea' | 'JukeBoxArea';
+export type InteractableType = 'ConversationArea' | 'ViewingArea' | 'TicTacToeArea' | 'JukeBoxMusicArea';
 export interface Interactable {
   type: InteractableType;
   id: InteractableID;
@@ -41,16 +38,6 @@ export interface Player {
   location: PlayerLocation;
 };
   
-  // can implement other options that the authorizationCodeGrant method accept
-  interface AuthorizationCodeGrantResponse {
-    body: {
-      'access_token': string;
-      'token_type': string;
-      'scope': string;
-      'expires_in': number;
-      'refresh_token': string;
-    };
-  }
 
 export type XY = { x: number, y: number };
 
@@ -89,8 +76,6 @@ export interface ViewingArea extends Interactable {
 
 export type GameStatus = 'IN_PROGRESS' | 'WAITING_TO_START' | 'OVER';
 
-export type MusicStatus = boolean;
-
 /**
  * Base type for the state of a game
  */
@@ -98,17 +83,11 @@ export interface GameState {
   status: GameStatus;
 }
 
-/**
- * Base type for the state of music
- */
-export interface MusicState {
-  status: MusicStatus;
+
+export interface MusicArea extends Interactable {
+  isPlaying: boolean;
   queue: string[];
   voting: Map<string, number>;
-}
-
-interface ISpotifyService {
-  spotifyApi: SpotifyWebApi;
 }
 
 /**
@@ -152,7 +131,8 @@ export interface TicTacToeGameState extends WinnableGameState {
 
 export type InteractableID = string;
 export type GameInstanceID = string;
-export type MusicAreaID = string;
+// export type JukeBoxID = string;
+
 
 /**
  * Type for the result of a game
@@ -186,21 +166,6 @@ export interface GameArea<T extends GameState> extends Interactable {
 }
 
 
-// export interface MusicState {
-//   status: 'NOT_STARTED_PLAYING' | MusicStatus;
-//   service: Spotify;
-// }
-
-export interface MusicInstanace<T extends MusicState> {
-  state: T;
-  id: MusicAreaID;
-  players: PlayerID[];
-}
-
-export interface MusicArea<T extends MusicState> extends Interactable {
-  music: MusicInstanace<T> | undefined;
-}
-
 export type CommandID = string;
 
 /**
@@ -223,8 +188,7 @@ interface InteractableCommandBase {
   type: string;
 }
 
-export type InteractableCommand =  ViewingAreaUpdateCommand | JoinGameCommand | GameMoveCommand<TicTacToeMove> | LeaveGameCommand | JoinMusicCommand |
-PlayMusicCommand | PauseMusicCommand | AddToQueueCommand | SearchSongCommand | SkipSongCommand | PreviousSongCommand | VotingCommand ;
+export type InteractableCommand =  ViewingAreaUpdateCommand | JoinGameCommand | GameMoveCommand<TicTacToeMove> | LeaveGameCommand | MusicAreaUpdatedCommand;
 
 
 export interface ViewingAreaUpdateCommand  {
@@ -233,43 +197,6 @@ export interface ViewingAreaUpdateCommand  {
 }
 export interface JoinGameCommand {
   type: 'JoinGame';
-}
-
-export interface JoinMusicCommand {
-  type: 'JoinMusic';
-  code: string;
-}
-
-export interface PlayMusicCommand {
-  type: 'PlayMusic';
-  song: string;
-}
-
-export interface PauseMusicCommand {
-  type: 'PauseMuisc';
-}
-
-export interface AddToQueueCommand {
-  type: 'AddToQueue';
-  song: string;
-}
-
-export interface SearchSongCommand {
-  type: 'SearchSong';
-  song: string;
-}
-
-export interface SkipSongCommand {
-  type: 'SkipSong';
-}
-
-export interface PreviousSongCommand {
-  type: 'PreviousSong';
-}
-
-export interface VotingCommand {
-  type: 'VoteSong';
-  song: string;
 }
 
 export interface LeaveGameCommand {
@@ -281,17 +208,19 @@ export interface GameMoveCommand<MoveType> {
   gameID: GameInstanceID;
   move: MoveType;
 }
+
+export interface MusicAreaUpdatedCommand {
+  type: "MusicAreaUpdate";
+  update: MusicArea;
+}
+
+
 export type InteractableCommandReturnType<CommandType extends InteractableCommand> = 
   CommandType extends JoinGameCommand ? { gameID: string}:
   CommandType extends ViewingAreaUpdateCommand ? undefined :
   CommandType extends GameMoveCommand<TicTacToeMove> ? undefined :
   CommandType extends LeaveGameCommand ? undefined :
-  CommandType extends JoinMusicCommand ?  { musicID: string} :
-  CommandType extends PlayMusicCommand ? undefined :
-  CommandType extends PauseMusicCommand ? undefined :
-  CommandType extends AddToQueueCommand ? undefined :
-  CommandType extends SearchSongCommand ? undefined :
-  CommandType extends VotingCommand ? undefined :
+  CommandType extends MusicAreaUpdatedCommand ? undefined :
   never;
 
 export type InteractableCommandResponse<MessageType> = {

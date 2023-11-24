@@ -1,4 +1,3 @@
-
 import {
     Accordion,
     AccordionButton,
@@ -13,25 +12,19 @@ import {
     ModalCloseButton,
     ModalContent,
     ModalHeader,
-    ModalOverlay,
-    useToast,
   } from '@chakra-ui/react';
-  import Interactable, { KnownInteractableTypes } from '../Interactable';
-  import React, { useCallback, useEffect, useState } from 'react';
+  import React, { useCallback } from 'react';
   import { useInteractable, useInteractableAreaController } from '../../../classes/TownController';
   import useTownController from '../../../hooks/useTownController';
-  import PlayerController from '../../../classes/PlayerController';
-  import MusicAreaController, { MusicEventTypes } from '../../../classes/interactable/MusicAreaController';
   import { InteractableID } from '../../../types/CoveyTownSocket';
-  import MusicAreaInteractable from './MusicAreaInteractable';
   import JukeBoxAreaController from '../../../classes/interactable/JukeBoxAreaController';
-  import MusicApp from './MusicApp';
+  import JukeBoxAreaInteractable from './JukeBoxAreaInteractable';
+
 
   const code = new URLSearchParams(window.location.search).get('code');
-  
-  function MusicArea({ interactableID }: { interactableID: InteractableID }): JSX.Element  {
-    const musicAreaController = useInteractableAreaController<JukeBoxAreaController>(interactableID);
+  export function JukeBoxArea({ interactableID }: { interactableID: InteractableID }): JSX.Element  {
     const townController = useTownController();
+    const musicAreaController = useInteractableAreaController<JukeBoxAreaController>(interactableID);
   
     return (
       <Container>
@@ -51,7 +44,6 @@ import {
                 return <ListItem key={player.id}>{player.userName}</ListItem>;
               })}
             </List> */}
-            < MusicApp/>
           </AccordionPanel>
         </AccordionItem>
       </Accordion>
@@ -66,24 +58,21 @@ import {
    *
    */
   export default function JukeBoxAreaWrapper(): JSX.Element {
-    const musicArea = useInteractable<MusicAreaInteractable>('musicArea');
+    const musicArea = useInteractable<JukeBoxAreaInteractable>('jukeBoxMusicArea');
     const townController = useTownController();
     const closeModal = useCallback(() => {
-      if (musicArea) {
+    if (musicArea) {
         townController.interactEnd(musicArea);
-        const controller = townController.getMusicAreaController(musicArea);
-        controller.pauseMusic();
       }
     }, [townController, musicArea]);
-  
-    if (musicArea && musicArea.getType() === 'musicArea') {
+
+    if (musicArea && musicArea.getData('type') ===  'jukeBoxMusicArea') {
       return (
         <Modal isOpen={true} onClose={closeModal} closeOnOverlayClick={false}>
-          <ModalOverlay />
           <ModalContent>
-            <ModalHeader>{musicArea.name}</ModalHeader>
+            <ModalHeader>{musicArea.id}</ModalHeader>
             <ModalCloseButton />
-            <MusicArea interactableID={musicArea.name} /> 
+            <JukeBoxArea interactableID={musicArea.id} /> 
           </ModalContent>
         </Modal>
       );

@@ -1,3 +1,4 @@
+/* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable @typescript-eslint/naming-convention */
 import Express from 'express';
 import * as http from 'http';
@@ -8,12 +9,12 @@ import swaggerUi from 'swagger-ui-express';
 import { ValidateError } from 'tsoa';
 import fs from 'fs/promises';
 import { Server as SocketServer } from 'socket.io';
+import SpotifyWebApi from 'spotify-web-api-node';
 import { RegisterRoutes } from '../generated/routes';
 import TownsStore from './lib/TownsStore';
 import { ClientToServerEvents, ServerToClientEvents } from './types/CoveyTownSocket';
 import { TownsController } from './town/TownsController';
 import { logError } from './Utils';
-import JukeBoxMusic from './town/music/JukeBoxMusic';
 
 dotenv.config();
 // Create the server instances
@@ -23,7 +24,12 @@ const server = http.createServer(app);
 const socketServer = new SocketServer<ClientToServerEvents, ServerToClientEvents>(server, {
   cors: { origin: '*' },
 });
-const service = new JukeBoxMusic();
+
+const spotifyApi = new SpotifyWebApi({
+  clientId: 'c7352d2289f4409c8f20675c19846d05', // process.env.SPOTIFY_CLIENT_ID || '',
+  clientSecret: '4d4a02b8ee564d33963088f2a9a5cbb2', // process.env.SPOTIFY_CLIENT_SECRET || '',
+  redirectUri: 'http://localhost:3000/authorize',
+});
 
 // Initialize the towns store with a factory that creates a broadcast emitter for a town
 TownsStore.initializeTownsStore((townID: string) => socketServer.to(townID));
@@ -71,43 +77,77 @@ app.use(
   },
 );
 
-// const clientId = process.env.SPOTIFY_CLIENT_ID as string;
-// const redirectUri = process.env.REDIRECT_URI as string;
-const scopes = 'user-read-private user-read-email';
-
-app.get('/redirect', (req, res) => {
-  const encodedClientId = encodeURIComponent('c7352d2289f4409c8f20675c19846d05');
-  const redirect = encodeURIComponent('http://localhost:3000/authorize');
-  const authUrl = `https://accounts.spotify.com/authorize?response_type=code&client_id=${encodedClientId}&&scope=${encodeURIComponent(
-    scopes,
-  )}&redirect_uri=${redirect}`;
-  res.redirect(authUrl);
-});
-
-// Define a route for authorization
-app.post('/authorize', async (req, res) => {
+// Function to refresh token
+const refreshAccessToken = async () => {
   try {
-    const data = await service.authorize(req.body);
-    res.json(data);
-    res.status(200).json({ message: 'Authorization successful' });
+    const data = await spotifyApi.refreshAccessToken();
+    spotifyApi.setAccessToken(data.body.access_token);
+    const expiresIn = data.body.expires_in;
+    const refreshBuffer = 300;
+    const refreshIn = (expiresIn - refreshBuffer) * 1000;
+    setTimeout(refreshAccessToken, refreshIn);
   } catch (error) {
-    res.status(500).send('Authentication failed');
+    console.error('Error refreshing access token:', error);
+  }
+};
+
+// Authorization route
+app.get('/authorize', async (req, res) => {
+  const code = req.query.code as string;
+  try {
+    const data = await spotifyApi.authorizationCodeGrant(code);
+    spotifyApi.setAccessToken(data.body.access_token);
+    spotifyApi.setRefreshToken(data.body.refresh_token);
+    setTimeout(refreshAccessToken, data.body.expires_in * 1000);
+    res.json({ message: 'Authorization successful' });
+  } catch (error) {
+    res.status(500).json({ message: 'Authorization failed', error });
   }
 });
 
-// Define a route for searching songs
+// Additional routes for searching songs, playing a song, pausing a song...
+// Example: Search songs
 app.get('/search', async (req, res) => {
   try {
-    const query = req.query.q as string;
-
-    if (!query) {
-      res.status(404).send('No query specified');
+    const results = await spotifyApi.searchTracks(req.query.query as string);
+    if (results.body.tracks && results.body.tracks.items) {
+      res.json(results.body.tracks.items);
     }
-
-    const response = await service.search(query);
-    res.json(response);
+    res.json([]);
   } catch (error) {
-    res.status(500).send((error as Error).message);
+    res.status(500).json({ message: 'Error searching songs', error });
+  }
+});
+
+// Play a song
+app.put('/play', async (req, res) => {
+  const { uri } = req.body;
+  try {
+    await spotifyApi.play({ uris: [uri] });
+    res.json({ message: 'Playback started' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error playing song', error });
+  }
+});
+
+// Pause playback
+app.put('/pause', async (req, res) => {
+  try {
+    await spotifyApi.pause();
+    res.json({ message: 'Playback paused' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error pausing playback', error });
+  }
+});
+
+// Add a song to the queue
+app.post('/queue', async (req, res) => {
+  const { uri } = req.body;
+  try {
+    await spotifyApi.addToQueue(uri);
+    res.json({ message: 'Song added to queue' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error adding song to queue', error });
   }
 });
 

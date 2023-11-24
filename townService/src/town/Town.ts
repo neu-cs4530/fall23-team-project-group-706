@@ -5,7 +5,7 @@ import InvalidParametersError from '../lib/InvalidParametersError';
 import IVideoClient from '../lib/IVideoClient';
 import Player from '../lib/Player';
 import TwilioVideo from '../lib/TwilioVideo';
-import { isViewingArea } from '../TestUtils';
+import { isMusicArea, isViewingArea } from '../TestUtils';
 import {
   ChatMessage,
   ConversationArea as ConversationAreaModel,
@@ -14,6 +14,7 @@ import {
   InteractableCommand,
   InteractableCommandBase,
   MusicArea,
+  MusicArea as MusicAreaModel,
   PlayerLocation,
   ServerToClientEvents,
   SocketData,
@@ -22,11 +23,9 @@ import {
 import { logError } from '../Utils';
 import ConversationArea from './ConversationArea';
 import GameAreaFactory from './games/GameAreaFactory';
-import MusicAreaFactory from './music/MusicAreaFactory';
 import InteractableArea from './InteractableArea';
 import ViewingArea from './ViewingArea';
-import JukeBoxMusic from './music/JukeBoxMusic';
-import JukeBoxMusicArea from './music/JukeBoxMusicArea';
+import JukeBoxMusicArea from './JukeBoxMusicArea';
 
 /**
  * The Town class implements the logic for each town: managing the various events that
@@ -162,6 +161,16 @@ export default class Town {
         );
         if (viewingArea) {
           (viewingArea as ViewingArea).updateModel(update);
+        }
+      }
+
+      if (isMusicArea(update)) {
+        newPlayer.townEmitter.emit('interactableUpdate', update);
+        const musicArea = this._interactables.find(
+          eachInteractable => eachInteractable.id === update.id,
+        );
+        if (musicArea) {
+          (musicArea as JukeBoxMusicArea).updateModel(update);
         }
       }
     });
@@ -336,6 +345,24 @@ export default class Town {
   }
 
   /**
+   * Creates a new muisc area in this town if there is not currently an active
+   * music area with the same ID. The music area ID must match the name of a
+   * music area that exists in this town's map.
+   */
+  // public addMusicArea(musicArea: MusicAreaModel): boolean {
+  //   const area = this._interactables.find(
+  //     eachArea => eachArea.id === musicArea.id,
+  //   ) as JukeBoxMusicArea;
+  //   if (!area) {
+  //     return false;
+  //   }
+  //   area.updateModel(musicArea);
+  //   area.addPlayersWithinBounds(this._players);
+  //   this._broadcastEmitter.emit('interactableUpdate', area.toModel());
+  //   return true;
+  // }
+
+  /**
    * Fetch a player's session based on the provided session token. Returns undefined if the
    * session token is not valid.
    *
@@ -409,8 +436,10 @@ export default class Town {
       .map(eachGameAreaObj => GameAreaFactory(eachGameAreaObj, this._broadcastEmitter));
 
     const musicAreas = objectLayer.objects
-      .filter(eachObject => eachObject.type === 'MusicArea')
-      .map(eachMusicAreaObj => MusicAreaFactory(eachMusicAreaObj, this._broadcastEmitter));
+      .filter(eachObject => eachObject.type === 'JukeBoxMusicArea')
+      .map(eachMusicAreaObject =>
+        JukeBoxMusicArea.fromMapObject(eachMusicAreaObject, this._broadcastEmitter),
+      );
 
     this._interactables = this._interactables
       .concat(viewingAreas)

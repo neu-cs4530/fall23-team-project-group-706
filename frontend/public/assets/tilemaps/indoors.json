@@ -613,7 +613,7 @@
                 {
                  "height":95,
                  "id":53,
-                 "name":"Juke Box",
+                 "name":"JukeBox",
                  "properties":[
                      {
                       "name":"type",
@@ -621,7 +621,7 @@
                       "value":"JukeBox"
                      }],
                  "rotation":0,
-                 "type":"MusicArea",
+                 "type": "JukeBoxMusicArea",
                  "visible":true,
                  "width":96,
                  "x":3167,

@@ -33,11 +33,7 @@ export class MockReactPlayer extends ReactPlayer {
  * @param props: A single property 'controller', which is the ViewingAreaController corresponding to the
  *               current viewing area.
  */
-export function ViewingAreaVideo({
-  controller,
-}: {
-  controller: ViewingAreaController;
-}): JSX.Element {
+export function ViewingAreaVideo({controller}: {controller: ViewingAreaController }): JSX.Element {
   const [isPlaying, setPlaying] = useState<boolean>(controller.isPlaying);
   const townController = useTownController();
 
@@ -113,11 +109,7 @@ export function ViewingAreaVideo({
  *
  * @param props: the viewing area interactable that is being interacted with
  */
-export function ViewingArea({
-  viewingArea,
-}: {
-  viewingArea: ViewingAreaInteractable;
-}): JSX.Element {
+export function ViewingArea({viewingArea}: {viewingArea: ViewingAreaInteractable}): JSX.Element {
   const townController = useTownController();
   const viewingAreaController = useInteractableAreaController<ViewingAreaController>(
     viewingArea.name,

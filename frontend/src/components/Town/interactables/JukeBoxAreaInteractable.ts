@@ -1,6 +1,6 @@
 import Interactable, { KnownInteractableTypes } from '../Interactable';
 
-export default class MusicAreaInteractable extends Interactable {
+export default class JukeBoxAreaInteractable extends Interactable {
 
   private _isInteracting = false;
 
@@ -50,6 +50,6 @@ export default class MusicAreaInteractable extends Interactable {
   }
   
   getType(): KnownInteractableTypes {
-    return 'musicArea';
+    return 'jukeBoxMusicArea';
   }
 }
