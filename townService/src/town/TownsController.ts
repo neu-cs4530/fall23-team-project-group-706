@@ -22,6 +22,7 @@ import {
   CoveyTownSocket,
   TownSettingsUpdate,
   ViewingArea,
+  JukeBoxAreaInteractable,
 } from '../types/CoveyTownSocket';
 
 /**
@@ -166,7 +167,7 @@ export class TownsController extends Controller {
   public async createMusicArea(
     @Path() townID: string,
     @Header('X-Session-Token') sessionToken: string,
-    @Body() requestBody: Omit<MusicArea, 'type'>,
+    @Body() requestBody: Omit<JukeBoxAreaInteractable, 'type'>,
   ): Promise<void> {
     const town = this._townsStore.getTownByID(townID);
     if (!town) {
@@ -177,7 +178,7 @@ export class TownsController extends Controller {
     }
     const success = town.addMusicArea({
       ...requestBody,
-      type: 'JukeBoxMusicArea',
+      type: 'JukeBoxArea',
       queue: [],
       voting: new Map<string, number>(),
     });
