@@ -10,7 +10,8 @@ import {
   TownEmitter,
   JukeBoxAreaInteractable as MusicAreaModel,
   InteractableID,
-  MusicAreaUpdatedCommand,
+  JukeBoxAreaInteractable,
+  JukeBoxAreaCommand,
 } from '../types/CoveyTownSocket';
 import InteractableArea from './InteractableArea';
 
@@ -24,7 +25,7 @@ export default class JukeBoxMusicArea extends InteractableArea {
   public voting: Map<string, number>;
 
   public constructor(
-    { id, isPlaying, queue, voting }: Omit<MusicAreaModel, 'type'>,
+    { id, isPlaying, queue, voting }: Omit<JukeBoxAreaInteractable, 'type'>,
     coordinates: BoundingBox,
     townEmitter: TownEmitter,
   ) {
@@ -34,7 +35,7 @@ export default class JukeBoxMusicArea extends InteractableArea {
     this.voting = voting;
   }
 
-  public toModel(): MusicAreaModel {
+  public toModel(): JukeBoxAreaInteractable {
     return {
       id: this.id,
       isPlaying: this.isPlaying,
@@ -50,7 +51,7 @@ export default class JukeBoxMusicArea extends InteractableArea {
    *
    * @param musicArea updated model
    */
-  public updateModel({ isPlaying, queue, voting }: MusicAreaModel) {
+  public updateModel({ isPlaying, queue, voting }: JukeBoxAreaInteractable) {
     this.queue = queue;
     this.isPlaying = isPlaying;
     this.voting = voting;
@@ -69,7 +70,7 @@ export default class JukeBoxMusicArea extends InteractableArea {
     command: CommandType,
   ): InteractableCommandReturnType<CommandType> {
     if (command.type === 'MusicAreaUpdate') {
-      const musicArea = command as MusicAreaUpdatedCommand;
+      const musicArea = command as JukeBoxAreaCommand;
       this.updateModel(musicArea.update);
       return {} as InteractableCommandReturnType<CommandType>;
     }

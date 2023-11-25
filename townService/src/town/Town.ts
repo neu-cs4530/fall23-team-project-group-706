@@ -5,7 +5,7 @@ import InvalidParametersError from '../lib/InvalidParametersError';
 import IVideoClient from '../lib/IVideoClient';
 import Player from '../lib/Player';
 import TwilioVideo from '../lib/TwilioVideo';
-import { isMusicArea, isViewingArea } from '../TestUtils';
+import { isViewingArea } from '../TestUtils';
 import {
   ChatMessage,
   ConversationArea as ConversationAreaModel,
@@ -160,16 +160,6 @@ export default class Town {
         );
         if (viewingArea) {
           (viewingArea as ViewingArea).updateModel(update);
-        }
-      }
-
-      if (isMusicArea(update)) {
-        newPlayer.townEmitter.emit('interactableUpdate', update);
-        const musicArea = this._interactables.find(
-          eachInteractable => eachInteractable.id === update.id,
-        );
-        if (musicArea) {
-          (musicArea as JukeBoxMusicArea).updateModel(update);
         }
       }
     });
