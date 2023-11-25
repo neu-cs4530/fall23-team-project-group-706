@@ -9,7 +9,7 @@ import Interactable from '../components/Town/Interactable';
 import ConversationArea from '../components/Town/interactables/ConversationArea';
 import GameArea from '../components/Town/interactables/GameArea';
 import ViewingArea from '../components/Town/interactables/ViewingArea';
-import MusicArea from '../components/Town/interactables/JukeBox/JukeBoxArea';
+import MusicArea from '../components/Town/interactables/JukeBoxAreaInteractable';
 import { LoginController } from '../contexts/LoginControllerContext';
 import { TownsService, TownsServiceClient } from '../generated/client';
 import useTownController from '../hooks/useTownController';
@@ -795,6 +795,32 @@ export function useInteractableAreaController<T>(interactableAreaID: string): T 
   }
   return interactableAreaController2 as unknown as T;
 }
+
+
+/**
+ * A react hook to retrieve an interactable area controller of the Jukebox interactable area
+ *
+ * This function will throw an error if the interactable area controller does not exist.
+ *
+ * This hook relies on the TownControllerContext.
+ *
+ * @param interactableAreaID The ID of the interactable area to retrieve the controller for
+ * @throws Error if there is no interactable area controller matching the specified ID
+ */
+export function useInteractableAreaControllerJukebox<T>(interactableAreaID: string): T {
+  const townController = useTownController();
+ 
+  const interactableAreaController = townController.musicAreas.find(
+    eachArea => eachArea.id == interactableAreaID,
+  );
+  if (!interactableAreaController) {
+    throw new Error(`Requested interactable area ${interactableAreaID} does not exist`);
+  }
+  return interactableAreaController as unknown as T;
+}
+
+
+
 
 /**
  * A react hook to retrieve the active conversation areas. This hook will re-render any components

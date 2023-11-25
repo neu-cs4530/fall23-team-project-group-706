@@ -14,7 +14,8 @@ import {
     ModalHeader,
   } from '@chakra-ui/react';
   import React, { useCallback } from 'react';
-  import { useInteractable, useInteractableAreaController } from '../../../../classes/TownController';
+import {
+  useInteractable, useInteractableAreaControllerJukebox } from '../../../../classes/TownController';
   import useTownController from '../../../../hooks/useTownController';
   import { InteractableID } from '../../../../types/CoveyTownSocket';
   import JukeBoxAreaController from '../../../../classes/interactable/JukeBoxAreaController';
@@ -24,7 +25,7 @@ import {
   const code = new URLSearchParams(window.location.search).get('code');
   export function JukeBoxArea({ interactableID }: { interactableID: InteractableID }): JSX.Element  {
     const townController = useTownController();
-    const musicAreaController = useInteractableAreaController<JukeBoxAreaController>(interactableID);
+    const musicAreaController = useInteractableAreaControllerJukebox<JukeBoxAreaController>(interactableID);
   
     return (
       <Container>
@@ -58,7 +59,7 @@ import {
    *
    */
   export default function JukeBoxAreaWrapper(): JSX.Element {
-    const musicArea = useInteractable<JukeBoxAreaInteractable>('jukeBoxArea');
+    const musicArea = useInteractable<JukeBoxAreaInteractable>('JukeBoxArea');
     const townController = useTownController();
     const closeModal = useCallback(() => {
       if (musicArea) {

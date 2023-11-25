@@ -82,7 +82,7 @@ export interface TrackObjectFull {
   uri: string;
 }
 
-export type InteractableType = 'ConversationArea' | 'ViewingArea' | 'TicTacToeArea' | 'JukeBoxMusicArea';
+export type InteractableType = 'ConversationArea' | 'ViewingArea' | 'TicTacToeArea' | 'JukeBoxArea';
 export interface Interactable {
   type: InteractableType;
   id: InteractableID;
@@ -149,7 +149,7 @@ export interface GameState {
 }
 
 
-export interface MusicArea extends Interactable {
+export interface JukeBoxAreaInteractable extends Interactable {
   isPlaying: boolean;
   queue: string[];
   voting: Map<string, number>;
