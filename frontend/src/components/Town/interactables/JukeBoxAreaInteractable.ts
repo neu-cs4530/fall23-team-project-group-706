@@ -50,6 +50,6 @@ export default class JukeBoxAreaInteractable extends Interactable {
   }
   
   getType(): KnownInteractableTypes {
-    return 'jukeBoxMusicArea';
+    return 'jukeBoxArea';
   }
 }

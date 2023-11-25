@@ -618,10 +618,10 @@
                      {
                       "name":"type",
                       "type":"string",
-                      "value":"JukeBox"
+                      "value":"JukeBoxMusic"
                      }],
                  "rotation":0,
-                 "type": "JukeBoxMusicArea",
+                 "type": "JukeBoxArea",
                  "visible":true,
                  "width":96,
                  "x":3167,

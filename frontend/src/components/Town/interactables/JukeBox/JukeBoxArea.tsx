@@ -14,11 +14,11 @@ import {
     ModalHeader,
   } from '@chakra-ui/react';
   import React, { useCallback } from 'react';
-  import { useInteractable, useInteractableAreaController } from '../../../classes/TownController';
-  import useTownController from '../../../hooks/useTownController';
-  import { InteractableID } from '../../../types/CoveyTownSocket';
-  import JukeBoxAreaController from '../../../classes/interactable/JukeBoxAreaController';
-  import JukeBoxAreaInteractable from './JukeBoxAreaInteractable';
+  import { useInteractable, useInteractableAreaController } from '../../../../classes/TownController';
+  import useTownController from '../../../../hooks/useTownController';
+  import { InteractableID } from '../../../../types/CoveyTownSocket';
+  import JukeBoxAreaController from '../../../../classes/interactable/JukeBoxAreaController';
+  import JukeBoxAreaInteractable from '../JukeBoxAreaInteractable';
 
 
   const code = new URLSearchParams(window.location.search).get('code');
@@ -58,21 +58,21 @@ import {
    *
    */
   export default function JukeBoxAreaWrapper(): JSX.Element {
-    const musicArea = useInteractable<JukeBoxAreaInteractable>('jukeBoxMusicArea');
+    const musicArea = useInteractable<JukeBoxAreaInteractable>('jukeBoxArea');
     const townController = useTownController();
     const closeModal = useCallback(() => {
-    if (musicArea) {
+      if (musicArea) {
         townController.interactEnd(musicArea);
       }
     }, [townController, musicArea]);
 
-    if (musicArea && musicArea.getData('type') ===  'jukeBoxMusicArea') {
+    if (musicArea && musicArea.getData('type') ===  'JukeBoxMusic') {
       return (
         <Modal isOpen={true} onClose={closeModal} closeOnOverlayClick={false}>
           <ModalContent>
-            <ModalHeader>{musicArea.id}</ModalHeader>
+            <ModalHeader>{musicArea.name}</ModalHeader>
             <ModalCloseButton />
-            <JukeBoxArea interactableID={musicArea.id} /> 
+            <JukeBoxArea interactableID={musicArea.name} /> 
           </ModalContent>
         </Modal>
       );

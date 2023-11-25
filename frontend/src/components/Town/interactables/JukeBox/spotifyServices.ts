@@ -1,10 +1,11 @@
 import axios from 'axios';
+import { AuthorizationResponse, Song } from '../../../../types/CoveyTownSocket';
 
 const API_BASE_URL = 'http://localhost:3000';
 
-export const authorizeUser = async (code: string): Promise<any> => {
+export const authorizeUser = async (code: string): Promise<AuthorizationResponse> => {
     try {
-        const response = await axios.get(`${API_BASE_URL}/authorize`, { params: { code } });
+        const response = await axios.get<AuthorizationResponse>(`${API_BASE_URL}/authorize`, { params: { code } });
         return response.data;
     } catch (error) {
         console.error('Error during authorization:', error);
@@ -45,6 +46,16 @@ export const addSongToQueue = async (songUri: string): Promise<void> => {
         await axios.post(`${API_BASE_URL}/queue`, { uri: songUri });
     } catch (error) {
         console.error('Error adding song to queue:', error);
+        throw error;
+    }
+};
+
+export const getQueue = async (): Promise<Song[]> => {
+    try {
+        const response = await axios.get<Song[]>(`${API_BASE_URL}/queue`);
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching queue:', error);
         throw error;
     }
 };

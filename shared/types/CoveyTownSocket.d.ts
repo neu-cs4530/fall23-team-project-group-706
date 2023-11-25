@@ -17,6 +17,71 @@ export type TownJoinResponse = {
   interactables: TypedInteractable[];
 }
 
+
+export interface Song {
+  id: string;
+  name: string;
+  uri: string;
+  artists: { name: string }[];
+}
+
+export interface SearchResponse {
+  tracks: {
+      href: string;
+      items: TrackObjectFull[];
+      limit: number;
+      next: string;
+      offset: number;
+      previous: string;
+      total: number;
+  };
+}
+
+export interface AuthorizationResponse {
+  access_token: string;
+  token_type: string;
+  expires_in: number;
+  refresh_token: string;
+  scope: string;
+}
+
+export interface ArtistObjectSimplified {
+  id: string;
+  name: string;
+}
+
+export interface AlbumObjectSimplified {
+  id: string;
+  name: string;
+  images: ImageObject[];
+}
+
+export interface ImageObject {
+  height: number;
+  url: string;
+  width: number;
+}
+
+export interface TrackObjectFull {
+  album: AlbumObjectSimplified;
+  artists: ArtistObjectSimplified[];
+  available_markets: string[];
+  disc_number: number;
+  duration_ms: number;
+  explicit: boolean;
+  external_ids: { [key: string]: string };
+  external_urls: { [key: string]: string };
+  href: string;
+  id: string;
+  is_local: boolean;
+  name: string;
+  popularity: number;
+  preview_url: string | null;
+  track_number: number;
+  type: 'track';
+  uri: string;
+}
+
 export type InteractableType = 'ConversationArea' | 'ViewingArea' | 'TicTacToeArea' | 'JukeBoxMusicArea';
 export interface Interactable {
   type: InteractableType;

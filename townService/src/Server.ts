@@ -1,5 +1,4 @@
 /* eslint-disable import/no-extraneous-dependencies */
-/* eslint-disable @typescript-eslint/naming-convention */
 import Express from 'express';
 import * as http from 'http';
 import CORS from 'cors';
@@ -12,7 +11,7 @@ import { Server as SocketServer } from 'socket.io';
 import SpotifyWebApi from 'spotify-web-api-node';
 import { RegisterRoutes } from '../generated/routes';
 import TownsStore from './lib/TownsStore';
-import { ClientToServerEvents, ServerToClientEvents } from './types/CoveyTownSocket';
+import { ClientToServerEvents, ServerToClientEvents, Song } from './types/CoveyTownSocket';
 import { TownsController } from './town/TownsController';
 import { logError } from './Utils';
 
@@ -87,21 +86,34 @@ const refreshAccessToken = async () => {
     const refreshIn = (expiresIn - refreshBuffer) * 1000;
     setTimeout(refreshAccessToken, refreshIn);
   } catch (error) {
-    console.error('Error refreshing access token:', error);
+    throw new Error('Error refreshing access token:');
   }
 };
 
 // Authorization route
 app.get('/authorize', async (req, res) => {
   const code = req.query.code as string;
+  if (!code) {
+    return res.status(400).send('Code is required');
+  }
+
   try {
     const data = await spotifyApi.authorizationCodeGrant(code);
     spotifyApi.setAccessToken(data.body.access_token);
     spotifyApi.setRefreshToken(data.body.refresh_token);
-    setTimeout(refreshAccessToken, data.body.expires_in * 1000);
-    res.json({ message: 'Authorization successful' });
+
+    // Schedule the next refresh
+    setTimeout(refreshAccessToken, (data.body.expires_in - 300) * 1000);
+
+    // Send back the tokens and expiration time to the client
+    return res.json({
+      access_token: data.body.access_token,
+      refresh_token: data.body.refresh_token,
+      expires_in: data.body.expires_in,
+    });
   } catch (error) {
-    res.status(500).json({ message: 'Authorization failed', error });
+    // console.error('Error during authorization:', error);
+    return res.status(500).json({ message: 'Authorization failed', error });
   }
 });
 
@@ -140,15 +152,28 @@ app.put('/pause', async (req, res) => {
   }
 });
 
+const QUEUE: Song[] = [];
+
 // Add a song to the queue
 app.post('/queue', async (req, res) => {
-  const { uri } = req.body;
+  const { id, name, uri, artists } = req.body;
+
+  if (!uri) {
+    return res.status(400).json({ message: 'Song URI is required' });
+  }
+
   try {
     await spotifyApi.addToQueue(uri);
-    res.json({ message: 'Song added to queue' });
+    QUEUE.push({ id, name, uri, artists });
+    return res.json({ message: 'Song added to queue', QUEUE });
   } catch (error) {
-    res.status(500).json({ message: 'Error adding song to queue', error });
+    return res.status(500).json({ message: 'Error adding song to queue', error });
   }
+});
+
+// Endpoint to get the current queue
+app.get('/queue', (req, res) => {
+  res.json(QUEUE);
 });
 
 // Start the configured server, defaulting to port 8081 if $PORT is not set

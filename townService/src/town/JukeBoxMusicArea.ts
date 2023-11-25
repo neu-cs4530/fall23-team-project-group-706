@@ -93,7 +93,7 @@ export default class JukeBoxMusicArea extends InteractableArea {
     const rect: BoundingBox = { x: mapObject.x, y: mapObject.y, width, height };
     const musicType = mapObject.properties?.find(prop => prop.name === 'type')?.value;
 
-    if (musicType === 'JukeBox') {
+    if (musicType === 'JukeBoxMusic') {
       return new JukeBoxMusicArea(
         {
           isPlaying: false,
