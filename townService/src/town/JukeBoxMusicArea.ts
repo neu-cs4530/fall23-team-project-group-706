@@ -8,7 +8,7 @@ import {
   InteractableCommand,
   InteractableCommandReturnType,
   TownEmitter,
-  MusicArea as MusicAreaModel,
+  JukeBoxAreaInteractable as MusicAreaModel,
   InteractableID,
   MusicAreaUpdatedCommand,
 } from '../types/CoveyTownSocket';
@@ -41,7 +41,7 @@ export default class JukeBoxMusicArea extends InteractableArea {
       queue: this.queue,
       voting: this.voting,
       occupants: this.occupantsByID,
-      type: 'JukeBoxMusicArea',
+      type: 'JukeBoxArea',
     };
   }
 

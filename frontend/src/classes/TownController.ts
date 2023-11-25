@@ -9,7 +9,7 @@ import Interactable from '../components/Town/Interactable';
 import ConversationArea from '../components/Town/interactables/ConversationArea';
 import GameArea from '../components/Town/interactables/GameArea';
 import ViewingArea from '../components/Town/interactables/ViewingArea';
-import MusicArea from '../components/Town/interactables/JukeBoxAreaInteractable';
+import JukeBoxAreaInteractable from '../components/Town/interactables/JukeBoxAreaInteractable';
 import { LoginController } from '../contexts/LoginControllerContext';
 import { TownsService, TownsServiceClient } from '../generated/client';
 import useTownController from '../hooks/useTownController';
@@ -690,7 +690,7 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
      * @param musicArea
      * @returns
      */
-  public getMusicAreaController(musicArea: MusicArea): JukeBoxAreaController {
+  public getMusicAreaController(musicArea: JukeBoxAreaInteractable): JukeBoxAreaController {
     const existingController = this._interactableControllers.find(
       eachExistingArea => eachExistingArea.id === musicArea.name,
     );

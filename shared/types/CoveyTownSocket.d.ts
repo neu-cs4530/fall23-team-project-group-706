@@ -276,7 +276,7 @@ export interface GameMoveCommand<MoveType> {
 
 export interface MusicAreaUpdatedCommand {
   type: "MusicAreaUpdate";
-  update: MusicArea;
+  update: JukeBoxAreaInteractable;
 }
 
 

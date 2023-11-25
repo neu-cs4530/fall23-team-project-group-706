@@ -13,8 +13,7 @@ import {
   Interactable,
   InteractableCommand,
   InteractableCommandBase,
-  MusicArea,
-  MusicArea as MusicAreaModel,
+  JukeBoxAreaInteractable as MusicAreaModel,
   PlayerLocation,
   ServerToClientEvents,
   SocketData,
@@ -349,18 +348,18 @@ export default class Town {
    * music area with the same ID. The music area ID must match the name of a
    * music area that exists in this town's map.
    */
-  // public addMusicArea(musicArea: MusicAreaModel): boolean {
-  //   const area = this._interactables.find(
-  //     eachArea => eachArea.id === musicArea.id,
-  //   ) as JukeBoxMusicArea;
-  //   if (!area) {
-  //     return false;
-  //   }
-  //   area.updateModel(musicArea);
-  //   area.addPlayersWithinBounds(this._players);
-  //   this._broadcastEmitter.emit('interactableUpdate', area.toModel());
-  //   return true;
-  // }
+  public addMusicArea(musicArea: MusicAreaModel): boolean {
+    const area = this._interactables.find(
+      eachArea => eachArea.id === musicArea.id,
+    ) as JukeBoxMusicArea;
+    if (!area) {
+      return false;
+    }
+    area.updateModel(musicArea);
+    area.addPlayersWithinBounds(this._players);
+    this._broadcastEmitter.emit('interactableUpdate', area.toModel());
+    return true;
+  }
 
   /**
    * Fetch a player's session based on the provided session token. Returns undefined if the
