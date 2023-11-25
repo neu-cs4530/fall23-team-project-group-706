@@ -5,7 +5,7 @@ import InvalidParametersError from '../lib/InvalidParametersError';
 import IVideoClient from '../lib/IVideoClient';
 import Player from '../lib/Player';
 import TwilioVideo from '../lib/TwilioVideo';
-import { isMusicArea, isViewingArea } from '../TestUtils';
+import { isViewingArea } from '../TestUtils';
 import {
   ChatMessage,
   ConversationArea as ConversationAreaModel,
@@ -13,8 +13,6 @@ import {
   Interactable,
   InteractableCommand,
   InteractableCommandBase,
-  MusicArea,
-  MusicArea as MusicAreaModel,
   PlayerLocation,
   ServerToClientEvents,
   SocketData,
@@ -161,16 +159,6 @@ export default class Town {
         );
         if (viewingArea) {
           (viewingArea as ViewingArea).updateModel(update);
-        }
-      }
-
-      if (isMusicArea(update)) {
-        newPlayer.townEmitter.emit('interactableUpdate', update);
-        const musicArea = this._interactables.find(
-          eachInteractable => eachInteractable.id === update.id,
-        );
-        if (musicArea) {
-          (musicArea as JukeBoxMusicArea).updateModel(update);
         }
       }
     });
@@ -343,24 +331,6 @@ export default class Town {
     this._broadcastEmitter.emit('interactableUpdate', area.toModel());
     return true;
   }
-
-  /**
-   * Creates a new muisc area in this town if there is not currently an active
-   * music area with the same ID. The music area ID must match the name of a
-   * music area that exists in this town's map.
-   */
-  // public addMusicArea(musicArea: MusicAreaModel): boolean {
-  //   const area = this._interactables.find(
-  //     eachArea => eachArea.id === musicArea.id,
-  //   ) as JukeBoxMusicArea;
-  //   if (!area) {
-  //     return false;
-  //   }
-  //   area.updateModel(musicArea);
-  //   area.addPlayersWithinBounds(this._players);
-  //   this._broadcastEmitter.emit('interactableUpdate', area.toModel());
-  //   return true;
-  // }
 
   /**
    * Fetch a player's session based on the provided session token. Returns undefined if the

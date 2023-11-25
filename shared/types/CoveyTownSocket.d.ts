@@ -182,7 +182,6 @@ export interface TicTacToeMove {
   col: TicTacToeGridPosition;
 }
 
-
 /**
  * Type for the state of a TicTacToe game
  * The state of the game is represented as a list of moves, and the playerIDs of the players (x and o)
@@ -253,7 +252,7 @@ interface InteractableCommandBase {
   type: string;
 }
 
-export type InteractableCommand =  ViewingAreaUpdateCommand | JoinGameCommand | GameMoveCommand<TicTacToeMove> | LeaveGameCommand | MusicAreaUpdatedCommand;
+export type InteractableCommand =  ViewingAreaUpdateCommand | JoinGameCommand | GameMoveCommand<TicTacToeMove> | LeaveGameCommand | JukeBoxAreaCommand;
 
 
 export interface ViewingAreaUpdateCommand  {
@@ -274,18 +273,17 @@ export interface GameMoveCommand<MoveType> {
   move: MoveType;
 }
 
-export interface MusicAreaUpdatedCommand {
+export interface JukeBoxAreaCommand {
   type: "MusicAreaUpdate";
-  update: MusicArea;
+  update: JukeBoxAreaInteractable;
 }
-
 
 export type InteractableCommandReturnType<CommandType extends InteractableCommand> = 
   CommandType extends JoinGameCommand ? { gameID: string}:
   CommandType extends ViewingAreaUpdateCommand ? undefined :
   CommandType extends GameMoveCommand<TicTacToeMove> ? undefined :
   CommandType extends LeaveGameCommand ? undefined :
-  CommandType extends MusicAreaUpdatedCommand ? undefined :
+  CommandType extends JukeBoxAreaCommand ? undefined :
   never;
 
 export type InteractableCommandResponse<MessageType> = {
