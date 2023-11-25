@@ -61,23 +61,15 @@ import {
   export default function JukeBoxAreaWrapper(): JSX.Element {
     const musicArea = useInteractable<JukeBoxAreaInteractable>('JukeBoxArea');
     const townController = useTownController();
-    // const closeModal = useCallback(() => {
-    //   if (musicArea) {
-    //     townController.interactEnd(musicArea);
-    //   }
-    // }, [townController, musicArea]);
-
     const closeModal = useCallback(() => {
-      townController.unPause();
-      close();
-    }, [townController, close]);
+      if (musicArea) {
+        townController.interactEnd(musicArea);
+      }
+    }, [townController, musicArea]);
 
     if (musicArea && musicArea.getData('type') ===  'JukeBoxMusic') {
       return (
-        <Modal isOpen={true} onClose={() => {
-          closeModal();
-          townController.unPause();
-        }} closeOnOverlayClick={false}>
+        <Modal isOpen={true} onClose={closeModal} closeOnOverlayClick={false}>
           <ModalContent>
             <ModalHeader>{musicArea.name}</ModalHeader>
             <ModalCloseButton />

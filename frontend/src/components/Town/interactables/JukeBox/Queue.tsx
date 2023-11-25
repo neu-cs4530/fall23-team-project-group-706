@@ -1,25 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Song } from '../../../../../../shared/types/CoveyTownSocket';
-import { getQueue } from './spotifyServices';
 
 
-const Queue: React.FC = () => {
+interface QueueProps {
+    queue: Song[];
+}
 
-    const [queue, setQueue] = useState<Song[]>([]);
-
-    useEffect(() => {
-        const fetchQueue = async () => {
-            try {
-                const queueData = await getQueue();
-                setQueue(queueData);
-            } catch (error) {
-                console.error('Error fetching queue:', error);
-            }
-        };
-
-        fetchQueue();
-    }, []);
-
+const Queue: React.FC<QueueProps> = ({ queue }) => {
     return (
         <div>
             <h2>Queue</h2>
@@ -31,7 +18,7 @@ const Queue: React.FC = () => {
                 ))}
             </ul>
         </div>
-    );  
+    );
 };
 
 export default Queue;
