@@ -406,7 +406,7 @@ export default class Town {
       .map(eachGameAreaObj => GameAreaFactory(eachGameAreaObj, this._broadcastEmitter));
 
     const musicAreas = objectLayer.objects
-      .filter(eachObject => eachObject.type === 'JukeBoxMusicArea')
+      .filter(eachObject => eachObject.type === 'JukeBoxArea')
       .map(eachMusicAreaObject =>
         JukeBoxMusicArea.fromMapObject(eachMusicAreaObject, this._broadcastEmitter),
       );
