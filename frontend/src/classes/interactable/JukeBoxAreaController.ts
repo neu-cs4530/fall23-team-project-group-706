@@ -1,6 +1,6 @@
 import _, { map } from 'lodash';
 import InteractableAreaController, { BaseInteractableEventMap } from './InteractableAreaController';
-import { MusicArea} from '../../types/CoveyTownSocket';
+import { JukeBoxAreaInteractable} from '../../types/CoveyTownSocket';
 import { InteractableID } from '../../generated/client/models/InteractableID';
 import TownController from '../TownController';
 
@@ -15,13 +15,13 @@ export type MusicEventTypes = BaseInteractableEventMap & {
  * state of the game, and for sending commands to the server to update the state of the game.
  * It is also responsible for notifying the UI when the state of the game changes, by emitting events.
  */
-export default class JukeBoxAreaController extends InteractableAreaController<MusicEventTypes, MusicArea> {
+export default class JukeBoxAreaController extends InteractableAreaController<MusicEventTypes, JukeBoxAreaInteractable> {
   
-  protected _model: MusicArea;
+  protected _model: JukeBoxAreaInteractable;
 
   protected _townController: TownController;
 
-  constructor(id: InteractableID, musicArea: MusicArea, townController: TownController) {
+  constructor(id: InteractableID, musicArea: JukeBoxAreaInteractable, townController: TownController) {
     super(id);
     this._model = musicArea;
     this._townController = townController;
@@ -44,7 +44,7 @@ export default class JukeBoxAreaController extends InteractableAreaController<Mu
   }
   
   // add the emit for updating the players in there
-  protected _updateFrom(newModel: MusicArea): void {  
+  protected _updateFrom(newModel: JukeBoxAreaInteractable): void {  
     const newSongs = newModel.queue ?? [];
     if (!_.isEqual(this.queue.length, newModel.queue.length) ||
     _.xor(newSongs, this._model.queue).length > 0) {
@@ -66,7 +66,7 @@ export default class JukeBoxAreaController extends InteractableAreaController<Mu
     this.emit('musicUpdated');
   }
 
-  toInteractableAreaModel(): MusicArea {
+  toInteractableAreaModel(): JukeBoxAreaInteractable {
     return this._model;
   }
 }

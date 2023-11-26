@@ -5,7 +5,6 @@ import {
     AccordionItem,
     AccordionPanel,
     Box,
-    Button,
     Container,
     Heading,
     Modal,
@@ -23,9 +22,11 @@ import {
 
 
   const code = new URLSearchParams(window.location.search).get('code');
+
   export function JukeBoxArea({ interactableID }: { interactableID: InteractableID }): JSX.Element  {
     const townController = useTownController();
     const musicAreaController = useInteractableAreaControllerJukebox<JukeBoxAreaController>(interactableID);
+    // console.log(musicAreaController);
   
     return (
       <Container>
@@ -59,15 +60,15 @@ import {
    *
    */
   export default function JukeBoxAreaWrapper(): JSX.Element {
-    const musicArea = useInteractable<JukeBoxAreaInteractable>('JukeBoxArea');
+    const musicArea = useInteractable<JukeBoxAreaInteractable>('jukeBoxArea');
     const townController = useTownController();
     const closeModal = useCallback(() => {
       if (musicArea) {
         townController.interactEnd(musicArea);
       }
     }, [townController, musicArea]);
-
-    if (musicArea && musicArea.getData('type') ===  'JukeBoxMusic') {
+  
+    if (musicArea) {
       return (
         <Modal isOpen={true} onClose={closeModal} closeOnOverlayClick={false}>
           <ModalContent>

@@ -13,7 +13,6 @@ import {
   Interactable,
   InteractableCommand,
   InteractableCommandBase,
-  JukeBoxAreaInteractable as MusicAreaModel,
   PlayerLocation,
   ServerToClientEvents,
   SocketData,
@@ -328,24 +327,6 @@ export default class Town {
       return false;
     }
     area.updateModel(viewingArea);
-    area.addPlayersWithinBounds(this._players);
-    this._broadcastEmitter.emit('interactableUpdate', area.toModel());
-    return true;
-  }
-
-  /**
-   * Creates a new muisc area in this town if there is not currently an active
-   * music area with the same ID. The music area ID must match the name of a
-   * music area that exists in this town's map.
-   */
-  public addMusicArea(musicArea: MusicAreaModel): boolean {
-    const area = this._interactables.find(
-      eachArea => eachArea.id === musicArea.id,
-    ) as JukeBoxMusicArea;
-    if (!area) {
-      return false;
-    }
-    area.updateModel(musicArea);
     area.addPlayersWithinBounds(this._players);
     this._broadcastEmitter.emit('interactableUpdate', area.toModel());
     return true;

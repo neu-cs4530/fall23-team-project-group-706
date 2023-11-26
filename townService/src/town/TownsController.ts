@@ -22,7 +22,6 @@ import {
   CoveyTownSocket,
   TownSettingsUpdate,
   ViewingArea,
-  JukeBoxAreaInteractable,
 } from '../types/CoveyTownSocket';
 
 /**
@@ -162,30 +161,25 @@ export class TownsController extends Controller {
     }
   }
 
-  @Post('{townID}/musicArea')
-  @Response<InvalidParametersError>(400, 'Invalid values specified')
-  public async createMusicArea(
-    @Path() townID: string,
-    @Header('X-Session-Token') sessionToken: string,
-    @Body() requestBody: Omit<JukeBoxAreaInteractable, 'type'>,
-  ): Promise<void> {
-    const town = this._townsStore.getTownByID(townID);
-    if (!town) {
-      throw new InvalidParametersError('Invalid values specified');
-    }
-    if (!town?.getPlayerBySessionToken(sessionToken)) {
-      throw new InvalidParametersError('Invalid values specified');
-    }
-    const success = town.addMusicArea({
-      ...requestBody,
-      type: 'JukeBoxArea',
-      queue: [],
-      voting: new Map<string, number>(),
-    });
-    if (!success) {
-      throw new InvalidParametersError('Invalid values specified');
-    }
-  }
+  // @Post('{townID}/musicArea')
+  // @Response<InvalidParametersError>(400, 'Invalid values specified')
+  // public async createMusicArea(
+  //   @Path() townID: string,
+  //   @Header('X-Session-Token') sessionToken: string,
+  //   @Body() requestBody: Omit<JukeBoxAreaInteractable, 'type'>,
+  // ): Promise<void> {
+  //   const town = this._townsStore.getTownByID(townID);
+  //   if (!town) {
+  //     throw new InvalidParametersError('Invalid values specified');
+  //   }
+  //   if (!town?.getPlayerBySessionToken(sessionToken)) {
+  //     throw new InvalidParametersError('Invalid values specified');
+  //   }
+  //   const success = town.addMusicArea({ ...requestBody, type: 'JukeBoxArea' });
+  //   if (!success) {
+  //     throw new InvalidParametersError('Invalid values specified');
+  //   }
+  // }
 
   /**
    * Connects a client's socket to the requested town, or disconnects the socket if no such town exists
