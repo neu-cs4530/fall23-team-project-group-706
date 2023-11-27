@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { AuthorizationResponse, Song } from '../../../../types/CoveyTownSocket';
+import { AuthorizationResponse, SearchResponse, Song } from '../../../../types/CoveyTownSocket';
 
 const API_BASE_URL = 'http://localhost:3000';
 
@@ -13,9 +13,9 @@ export const authorizeUser = async (code: string): Promise<AuthorizationResponse
     }
 };
 
-export const searchSongs = async (query: string): Promise<any[]> => {
+export const searchSongs = async (query: string): Promise<SearchResponse> => {
     try {
-        const response = await axios.get(`${API_BASE_URL}/search`, { params: { query } });
+        const response = await axios.get<SearchResponse>(`${API_BASE_URL}/search`, { params: { query } });
         return response.data; // Adjust based on how your API sends back the data
     } catch (error) {
         console.error('Error searching songs:', error);

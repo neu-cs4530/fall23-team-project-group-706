@@ -1,19 +1,17 @@
 import React, { useState, ChangeEvent } from 'react';
-import { Song } from '../../../../../../shared/types/CoveyTownSocket';
+import { Song, SpotifyTrack } from '../../../../../../shared/types/CoveyTownSocket';
 import { addSongToQueue, searchSongs } from './spotifyServices';
-
-
 
 
 const SearchSongs: React.FC = () => {
     const [query, setQuery] = useState<string>('');
-    const [songs, setSongs] = useState<Song[]>([]);
+    const [songs, setSongs] = useState<SpotifyTrack[]>([]);
 
     const handleSearch = async () => {
         if (query) {
             try {
                 const results = await searchSongs(query);
-                setSongs(results);
+                setSongs(results.tracks.items);
             } catch (error) {
                 console.error('Error searching songs:', error);
             }
@@ -23,10 +21,8 @@ const SearchSongs: React.FC = () => {
     const handleAddToQueue = async (songUri: string) => {
         try {
             await addSongToQueue(songUri);
-            // Handle successful addition to queue, maybe notify the user
         } catch (error) {
             console.error('Error adding song to queue:', error);
-            // Handle the error, maybe display a message to the user
         }
     };
 

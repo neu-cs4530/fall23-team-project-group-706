@@ -27,7 +27,7 @@ const socketServer = new SocketServer<ClientToServerEvents, ServerToClientEvents
 const spotifyApi = new SpotifyWebApi({
   clientId: 'c7352d2289f4409c8f20675c19846d05', // process.env.SPOTIFY_CLIENT_ID || '',
   clientSecret: '4d4a02b8ee564d33963088f2a9a5cbb2', // process.env.SPOTIFY_CLIENT_SECRET || '',
-  redirectUri: 'http://localhost:3000/authorize',
+  redirectUri: 'http://localhost:3000',
 });
 
 // Initialize the towns store with a factory that creates a broadcast emitter for a town
@@ -92,19 +92,21 @@ const refreshAccessToken = async () => {
 
 // Authorization route
 app.get('/authorize', async (req, res) => {
-  const code = req.query.code as string;
+  const { code } = req.body;
   if (!code) {
     return res.status(400).send('Code is required');
+  }
+
+  if (typeof code !== 'string') {
+    return res.status(400).json({ message: 'Invalid request: code must be a string.' });
   }
 
   try {
     const data = await spotifyApi.authorizationCodeGrant(code);
     spotifyApi.setAccessToken(data.body.access_token);
     spotifyApi.setRefreshToken(data.body.refresh_token);
-
     // Schedule the next refresh
     setTimeout(refreshAccessToken, (data.body.expires_in - 300) * 1000);
-
     // Send back the tokens and expiration time to the client
     return res.json({
       access_token: data.body.access_token,
@@ -172,9 +174,7 @@ app.post('/queue', async (req, res) => {
 });
 
 // Endpoint to get the current queue
-app.get('/queue', (req, res) => {
-  res.json(QUEUE);
-});
+app.get('/queue', (req, res) => res.json(QUEUE));
 
 // Start the configured server, defaulting to port 8081 if $PORT is not set
 server.listen(process.env.PORT || 8081, () => {

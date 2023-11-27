@@ -17,6 +17,42 @@ export type TownJoinResponse = {
   interactables: TypedInteractable[];
 }
 
+export interface SpotifyImage {
+  url: string;
+  height: number;
+  width: number;
+}
+
+export interface SpotifyArtist {
+  id: string;
+  name: string;
+}
+
+export interface SpotifyAlbum {
+  id: string;
+  name: string;
+  images: SpotifyImage[];
+}
+
+export interface SpotifyTrack {
+  id: string;
+  name: string;
+  artists: SpotifyArtist[];
+  album: SpotifyAlbum;
+  uri: string;
+}
+
+export interface SpotifyPagination<T> {
+  items: T[];
+  total: number;
+  limit: number;
+  offset: number;
+}
+
+export interface SearchResponse {
+  tracks: SpotifyPagination<SpotifyTrack>;
+}
+
 
 export interface Song {
   id: string;
@@ -25,17 +61,17 @@ export interface Song {
   artists: { name: string }[];
 }
 
-export interface SearchResponse {
-  tracks: {
-      href: string;
-      items: TrackObjectFull[];
-      limit: number;
-      next: string;
-      offset: number;
-      previous: string;
-      total: number;
-  };
-}
+// export interface SearchResponse {
+//   tracks: {
+//       href: string;
+//       items: TrackObjectFull[];
+//       limit: number;
+//       next: string;
+//       offset: number;
+//       previous: string;
+//       total: number;
+//   };
+// }
 
 export interface AuthorizationResponse {
   access_token: string;

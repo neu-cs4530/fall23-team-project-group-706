@@ -12,21 +12,41 @@ import {
     ModalContent,
     ModalHeader,
   } from '@chakra-ui/react';
-  import React, { useCallback } from 'react';
+  import React, { useCallback, useEffect, useState } from 'react';
 import {
   useInteractable, useInteractableAreaControllerJukebox } from '../../../../classes/TownController';
   import useTownController from '../../../../hooks/useTownController';
   import { InteractableID } from '../../../../types/CoveyTownSocket';
   import JukeBoxAreaController from '../../../../classes/interactable/JukeBoxAreaController';
   import JukeBoxAreaInteractable from '../JukeBoxAreaInteractable';
+  import LoginButton from './LoginButton';
+  import { authorizeUser } from './spotifyServices';
 
-
-  const code = new URLSearchParams(window.location.search).get('code');
 
   export function JukeBoxArea({ interactableID }: { interactableID: InteractableID }): JSX.Element  {
     const townController = useTownController();
     const musicAreaController = useInteractableAreaControllerJukebox<JukeBoxAreaController>(interactableID);
-    // console.log(musicAreaController);
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+    useEffect(() => {
+      const code = new URLSearchParams(window.location.search).get('code');
+      if (code) {
+          console.log('Authorization code found:', code);
+          handleAuthentication(code);
+      }
+    }, []);
+
+
+    const handleAuthentication = async (code: string) => {
+        try {
+            await authorizeUser(code);
+            setIsAuthenticated(true);
+            window.history.pushState({}, document.title, window.location.pathname);
+        } catch (error) {
+            console.error('Authentication error:', error);
+        }
+    };
+
   
     return (
       <Container>
@@ -46,6 +66,11 @@ import {
                 return <ListItem key={player.id}>{player.userName}</ListItem>;
               })}
             </List> */}
+            <div>
+            {!isAuthenticated && <LoginButton />}
+            {isAuthenticated && <div>Welcome to the app!</div>}
+            {/* Rest of the stuff */}
+            </div>
           </AccordionPanel>
         </AccordionItem>
       </Accordion>
