@@ -7,7 +7,7 @@ const SCOPE = encodeURIComponent('user-read-private user-read-email');
 const AUTH_URL = `https://accounts.spotify.com/authorize?client_id=${CLIENT_ID}&response_type=code&redirect_uri=${REDIRECT_URI}&scope=${SCOPE}`;
 
 const LoginButton: React.FC = () => {
-    return <button onClick={() => window.location.href = AUTH_URL}>Login with Spotify</button>;
+    return <button onClick={() => window.location.href = AUTH_URL}>Login to Music Player</button>;
 };
 
 export default LoginButton;

@@ -21,6 +21,7 @@ import {
   import JukeBoxAreaInteractable from '../JukeBoxAreaInteractable';
   import LoginButton from './LoginButton';
   import { authorizeUser } from './spotifyServices';
+import SearchSongs from './SearchSongs';
 
 
   export function JukeBoxArea({ interactableID }: { interactableID: InteractableID }): JSX.Element  {
@@ -30,14 +31,7 @@ import {
 
     useEffect(() => {
       const code = new URLSearchParams(window.location.search).get('code');
-      if (code) {
-          console.log('Authorization code found:', code);
-          handleAuthentication(code);
-      }
-    }, []);
-
-
-    const handleAuthentication = async (code: string) => {
+      const handleAuthentication = async (code: string) => {
         try {
             await authorizeUser(code);
             setIsAuthenticated(true);
@@ -46,7 +40,13 @@ import {
             console.error('Authentication error:', error);
         }
     };
+      if (code) {
+          console.log('Authorization code found:', code);
+          handleAuthentication(code);
+      }
+    }, []);
 
+  
   
     return (
       <Container>
@@ -68,8 +68,7 @@ import {
             </List> */}
             <div>
             {!isAuthenticated && <LoginButton />}
-            {isAuthenticated && <div>Welcome to the app!</div>}
-            {/* Rest of the stuff */}
+            {isAuthenticated && <div>Welcome to Your JukeBox!</div>}
             </div>
           </AccordionPanel>
         </AccordionItem>
@@ -87,6 +86,14 @@ import {
   export default function JukeBoxAreaWrapper(): JSX.Element {
     const musicArea = useInteractable<JukeBoxAreaInteractable>('jukeBoxArea');
     const townController = useTownController();
+    // const opneModal = useEffect(() => {
+    //   if (musicArea) {
+    //     townController.pause();
+    //   } else {
+    //     townController.unPause();
+    //   }
+    // }, [coveyTownController, newConversation]);
+
     const closeModal = useCallback(() => {
       if (musicArea) {
         townController.interactEnd(musicArea);

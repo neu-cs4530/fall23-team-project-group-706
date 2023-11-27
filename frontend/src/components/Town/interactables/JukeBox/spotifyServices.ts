@@ -1,11 +1,14 @@
 import axios from 'axios';
-import { AuthorizationResponse, SearchResponse, Song } from '../../../../types/CoveyTownSocket';
+import { AuthorizationResponse, SearchResponse, Song } from '../../../../../../shared/types/CoveyTownSocket';
 
-const API_BASE_URL = 'http://localhost:3000';
+// change it 
+const API_BASE_URL = 'http://localhost:8081';
 
 export const authorizeUser = async (code: string): Promise<AuthorizationResponse> => {
+    console.log('inside authorization', code);
     try {
-        const response = await axios.get<AuthorizationResponse>(`${API_BASE_URL}/authorize`, { params: { code } });
+        const response = await axios.get(`${API_BASE_URL}/authorize`, { params: { code } });
+        console.log(response.data);
         return response.data;
     } catch (error) {
         console.error('Error during authorization:', error);

@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /* eslint-disable import/no-extraneous-dependencies */
 import Express from 'express';
 import * as http from 'http';
@@ -51,6 +52,13 @@ app.use('/docs', swaggerUi.serve, async (_req: Express.Request, res: Express.Res
 // Register the TownsController routes with the express server
 RegisterRoutes(app);
 
+// app.use((req, res, next) => {
+//   res.setHeader('Access-Control-Allow-Origin', 'http://localhost:8081');
+//   res.setHeader('Access-Control-Allow-Methods', 'POST, GET, PUT');
+//   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+//   next();
+// });
+
 // Add a middleware for Express to handle errors
 app.use(
   (
@@ -92,17 +100,18 @@ const refreshAccessToken = async () => {
 
 // Authorization route
 app.get('/authorize', async (req, res) => {
-  const { code } = req.body;
+  // console.log('in the backend authorized', Object.keys(req.query));
+  const { code } = req.query;
+  // console.log(code);
   if (!code) {
     return res.status(400).send('Code is required');
   }
-
   if (typeof code !== 'string') {
     return res.status(400).json({ message: 'Invalid request: code must be a string.' });
   }
-
   try {
     const data = await spotifyApi.authorizationCodeGrant(code);
+    console.log(data);
     spotifyApi.setAccessToken(data.body.access_token);
     spotifyApi.setRefreshToken(data.body.refresh_token);
     // Schedule the next refresh

@@ -12,6 +12,7 @@ export type PlayerGameObjects = {
   label: Phaser.GameObjects.Text;
   locationManagedByGameScene: boolean /* For the local player, the game scene will calculate the current location, and we should NOT apply updates when we receive events */;
 };
+
 export default class PlayerController extends (EventEmitter as new () => TypedEmitter<PlayerEvents>) {
   private _location: PlayerLocation;
 
