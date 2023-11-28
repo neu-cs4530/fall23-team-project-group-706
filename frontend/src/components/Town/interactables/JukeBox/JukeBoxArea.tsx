@@ -13,7 +13,7 @@ import {
     ModalHeader,
   } from '@chakra-ui/react';
   import React, { useCallback, useEffect, useState } from 'react';
-import {
+  import {
   useInteractable, useInteractableAreaControllerJukebox } from '../../../../classes/TownController';
   import useTownController from '../../../../hooks/useTownController';
   import { InteractableID } from '../../../../types/CoveyTownSocket';
@@ -73,6 +73,7 @@ import SearchSongs from './SearchSongs';
           </AccordionPanel>
         </AccordionItem>
       </Accordion>
+      <SearchSongs/>
     </Container>
     );
   }
@@ -86,13 +87,13 @@ import SearchSongs from './SearchSongs';
   export default function JukeBoxAreaWrapper(): JSX.Element {
     const musicArea = useInteractable<JukeBoxAreaInteractable>('jukeBoxArea');
     const townController = useTownController();
-    // const opneModal = useEffect(() => {
-    //   if (musicArea) {
-    //     townController.pause();
-    //   } else {
-    //     townController.unPause();
-    //   }
-    // }, [coveyTownController, newConversation]);
+    useEffect(() => {
+      if (musicArea) {
+        townController.pause();
+      } else {
+        townController.unPause();
+      }
+    }, [townController, musicArea]);
 
     const closeModal = useCallback(() => {
       if (musicArea) {

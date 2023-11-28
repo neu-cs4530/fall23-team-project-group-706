@@ -1,5 +1,5 @@
 import React, { useState, ChangeEvent } from 'react';
-import { Song, SpotifyTrack } from '../../../../../../shared/types/CoveyTownSocket';
+import { SpotifyTrack } from '../../../../../../shared/types/CoveyTownSocket';
 import { addSongToQueue, searchSongs } from './spotifyServices';
 
 
@@ -11,7 +11,10 @@ const SearchSongs: React.FC = () => {
         if (query) {
             try {
                 const results = await searchSongs(query);
-                setSongs(results.tracks.items);
+                if (results.tracks && results.tracks.items) {
+                    setSongs(results.tracks.items);
+                    console.log(results.tracks.items);
+                }
             } catch (error) {
                 console.error('Error searching songs:', error);
             }

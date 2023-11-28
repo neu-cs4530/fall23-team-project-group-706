@@ -111,7 +111,7 @@ app.get('/authorize', async (req, res) => {
   }
   try {
     const data = await spotifyApi.authorizationCodeGrant(code);
-    console.log(data);
+    // console.log(data);
     spotifyApi.setAccessToken(data.body.access_token);
     spotifyApi.setRefreshToken(data.body.refresh_token);
     // Schedule the next refresh
@@ -133,10 +133,11 @@ app.get('/authorize', async (req, res) => {
 app.get('/search', async (req, res) => {
   try {
     const results = await spotifyApi.searchTracks(req.query.query as string);
+    console.log(results);
     if (results.body.tracks && results.body.tracks.items) {
       res.json(results.body.tracks.items);
     }
-    res.json([]);
+    // res.json([]);
   } catch (error) {
     res.status(500).json({ message: 'Error searching songs', error });
   }

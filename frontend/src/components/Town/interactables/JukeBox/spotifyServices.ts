@@ -5,10 +5,10 @@ import { AuthorizationResponse, SearchResponse, Song } from '../../../../../../s
 const API_BASE_URL = 'http://localhost:8081';
 
 export const authorizeUser = async (code: string): Promise<AuthorizationResponse> => {
-    console.log('inside authorization', code);
+    // console.log('inside authorization', code);
     try {
         const response = await axios.get(`${API_BASE_URL}/authorize`, { params: { code } });
-        console.log(response.data);
+        // console.log(response.data);
         return response.data;
     } catch (error) {
         console.error('Error during authorization:', error);
@@ -18,7 +18,7 @@ export const authorizeUser = async (code: string): Promise<AuthorizationResponse
 
 export const searchSongs = async (query: string): Promise<SearchResponse> => {
     try {
-        const response = await axios.get<SearchResponse>(`${API_BASE_URL}/search`, { params: { query } });
+        const response = await axios.get(`${API_BASE_URL}/search`, { params: { query } });
         return response.data; // Adjust based on how your API sends back the data
     } catch (error) {
         console.error('Error searching songs:', error);
