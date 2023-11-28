@@ -133,29 +133,30 @@ app.get('/authorize', async (req, res) => {
 app.get('/search', async (req, res) => {
   try {
     const results = await spotifyApi.searchTracks(req.query.query as string);
-    console.log(results);
     if (results.body.tracks && results.body.tracks.items) {
       res.json(results.body.tracks.items);
     }
-    // res.json([]);
   } catch (error) {
     res.status(500).json({ message: 'Error searching songs', error });
   }
 });
 
 // Play a song
-app.put('/play', async (req, res) => {
+app.post('/play', async (req, res) => {
   const { uri } = req.body;
   try {
     await spotifyApi.play({ uris: [uri] });
     res.json({ message: 'Playback started' });
   } catch (error) {
-    res.status(500).json({ message: 'Error playing song', error });
+    console.error('Error playing song on backend:', error);
+    res
+      .status(500)
+      .json({ message: 'Error playing song on backend', error: (error as Error).message || error });
   }
 });
 
 // Pause playback
-app.put('/pause', async (req, res) => {
+app.post('/pause', async (req, res) => {
   try {
     await spotifyApi.pause();
     res.json({ message: 'Playback paused' });

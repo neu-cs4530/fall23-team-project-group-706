@@ -16,7 +16,7 @@ export const authorizeUser = async (code: string): Promise<AuthorizationResponse
     }
 };
 
-export const searchSongs = async (query: string): Promise<SearchResponse> => {
+export const searchSongs = async (query: string): Promise<any> => {
     try {
         const response = await axios.get(`${API_BASE_URL}/search`, { params: { query } });
         return response.data; // Adjust based on how your API sends back the data
@@ -30,7 +30,14 @@ export const playSong = async (songUri: string): Promise<void> => {
     try {
         await axios.post(`${API_BASE_URL}/play`, { uri: songUri });
     } catch (error) {
-        console.error('Error playing song:', error);
+        if (axios.isAxiosError(error)) {
+            console.error('Error playing song on frontend:', error.message);
+            if (error.response) {
+                console.error('Error response:', error.response.data);
+            }
+        } else {
+            console.error('Error playing song on frontend:', error);
+        }
         throw error;
     }
 };
@@ -53,9 +60,9 @@ export const addSongToQueue = async (songUri: string): Promise<void> => {
     }
 };
 
-export const getQueue = async (): Promise<Song[]> => {
+export const getQueue = async (): Promise<any> => {
     try {
-        const response = await axios.get<Song[]>(`${API_BASE_URL}/queue`);
+        const response = await axios.get(`${API_BASE_URL}/queue`);
         return response.data;
     } catch (error) {
         console.error('Error fetching queue:', error);

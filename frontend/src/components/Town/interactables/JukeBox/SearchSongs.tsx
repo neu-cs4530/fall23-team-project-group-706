@@ -1,6 +1,7 @@
 import React, { useState, ChangeEvent } from 'react';
 import { SpotifyTrack } from '../../../../../../shared/types/CoveyTownSocket';
-import { addSongToQueue, searchSongs } from './spotifyServices';
+import { addSongToQueue, playSong, searchSongs } from './spotifyServices';
+import { Input, Button, List, ListItem, Box, Text } from '@chakra-ui/react';
 
 
 const SearchSongs: React.FC = () => {
@@ -11,9 +12,8 @@ const SearchSongs: React.FC = () => {
         if (query) {
             try {
                 const results = await searchSongs(query);
-                if (results.tracks && results.tracks.items) {
-                    setSongs(results.tracks.items);
-                    console.log(results.tracks.items);
+                if (results&& results) {
+                    setSongs(results);
                 }
             } catch (error) {
                 console.error('Error searching songs:', error);
@@ -33,20 +33,49 @@ const SearchSongs: React.FC = () => {
         setQuery(event.target.value);
     };
 
+    const handlePlaySong = async (songUri: string) => {
+        try {
+            await playSong(songUri);
+        } catch (error) {
+            console.error('Error playing song:', error);
+        }
+    };
+
     return (
-        <div>
-            <input type="text" value={query} onChange={handleInputChange} />
-            <button onClick={handleSearch}>Search</button>
-            <ul>
+        <Box>
+            <Input 
+                placeholder="Search songs" 
+                value={query} 
+                onChange={handleInputChange} 
+            />
+            <Button colorScheme="blue" onClick={handleSearch}>
+                Search
+            </Button>
+            <List spacing={3}>
                 {songs.map((song) => (
-                    <li key={song.id}>
-                        {song.name} by {song.artists.map((artist) => artist.name).join(', ')}
-                        <button onClick={() => handleAddToQueue(song.uri)}>Add to Queue</button>
-                    </li>
+                    <ListItem key={song.id}>
+                        <Text>
+                            {song.name} by {song.artists.map((artist) => artist.name).join(', ')}
+                        </Text>
+                        <Button 
+                            colorScheme="green" 
+                            onClick={() => handleAddToQueue(song.uri)}
+                        >
+                            Add to Queue
+                        </Button>
+                        <Button 
+                            colorScheme="teal" 
+                            onClick={() => handlePlaySong(song.uri)}
+                            ml={2}
+                        >
+                            Play
+                        </Button>
+                    </ListItem>
                 ))}
-            </ul>
-        </div>
+            </List>
+        </Box>
     );
 };
+
 
 export default SearchSongs;

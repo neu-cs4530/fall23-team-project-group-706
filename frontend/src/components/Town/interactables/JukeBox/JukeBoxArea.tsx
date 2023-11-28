@@ -1,33 +1,31 @@
 import {
-    Accordion,
-    AccordionButton,
-    AccordionIcon,
-    AccordionItem,
-    AccordionPanel,
     Box,
     Container,
-    Heading,
     Modal,
     ModalCloseButton,
     ModalContent,
     ModalHeader,
+    Text,
   } from '@chakra-ui/react';
   import React, { useCallback, useEffect, useState } from 'react';
   import {
   useInteractable, useInteractableAreaControllerJukebox } from '../../../../classes/TownController';
   import useTownController from '../../../../hooks/useTownController';
-  import { InteractableID } from '../../../../types/CoveyTownSocket';
+  import { InteractableID, SpotifyTrack } from '../../../../types/CoveyTownSocket';
   import JukeBoxAreaController from '../../../../classes/interactable/JukeBoxAreaController';
   import JukeBoxAreaInteractable from '../JukeBoxAreaInteractable';
   import LoginButton from './LoginButton';
-  import { authorizeUser } from './spotifyServices';
+  import { authorizeUser, getQueue } from './spotifyServices';
 import SearchSongs from './SearchSongs';
+import Queue from './Queue';
 
 
   export function JukeBoxArea({ interactableID }: { interactableID: InteractableID }): JSX.Element  {
     const townController = useTownController();
     const musicAreaController = useInteractableAreaControllerJukebox<JukeBoxAreaController>(interactableID);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [queue, setQueue] = useState<SpotifyTrack[]>([]);
+    // const [triggerUpdate, setTriggerUpdate] = useState(false);
 
     useEffect(() => {
       const code = new URLSearchParams(window.location.search).get('code');
@@ -46,35 +44,27 @@ import SearchSongs from './SearchSongs';
       }
     }, []);
 
-  
+    useEffect(() => {
+      const fetchQueue = async () => {
+          try {
+              const fetchedQueue = await getQueue();
+              setQueue(fetchedQueue);
+          } catch (error) {
+              console.error('Error fetching queue:', error);
+          }
+      };
+      fetchQueue();
+  }, []);
   
     return (
       <Container>
-        <Accordion allowToggle>
-        <AccordionItem>
-          <Heading as='h3'>
-            <AccordionButton>
-              <Box as='span' flex='1' textAlign='left'>
-                Current Observers
-                <AccordionIcon />
-              </Box>
-            </AccordionButton>
-          </Heading>
-          <AccordionPanel>
-            {/* <List aria-label='list of observers in the game'>
-              {observers.map(player => {
-                return <ListItem key={player.id}>{player.userName}</ListItem>;
-              })}
-            </List> */}
-            <div>
+            <Box>
             {!isAuthenticated && <LoginButton />}
-            {isAuthenticated && <div>Welcome to Your JukeBox!</div>}
-            </div>
-          </AccordionPanel>
-        </AccordionItem>
-      </Accordion>
-      <SearchSongs/>
-    </Container>
+            {isAuthenticated && <Text>Welcome to Your JukeBox!</Text>}
+            </Box>
+            <SearchSongs/>
+            <Queue queue={queue}/>
+      </Container>
     );
   }
   
