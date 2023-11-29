@@ -115,7 +115,9 @@ app.get('/authorize', async (req, res) => {
     });
   } catch (error) {
     console.error('Error during authorization:', error);
-    return res.status(500).json({ message: 'Authorization failed', error });
+    return res
+      .status(500)
+      .json({ message: 'Authorization failed', error: (error as Error).message || error });
   }
 });
 
@@ -128,7 +130,9 @@ app.get('/search', async (req, res) => {
       res.json(results.body.tracks.items);
     }
   } catch (error) {
-    res.status(500).json({ message: 'Error searching songs', error });
+    res
+      .status(500)
+      .json({ message: 'Error searching songs', error: (error as Error).message || error });
   }
 });
 
@@ -152,7 +156,9 @@ app.post('/pause', async (req, res) => {
     await spotifyApi.pause();
     res.json({ message: 'Playback paused' });
   } catch (error) {
-    res.status(500).json({ message: 'Error pausing playback', error });
+    res
+      .status(500)
+      .json({ message: 'Error pausing playback', error: (error as Error).message || error });
   }
 });
 
@@ -164,13 +170,15 @@ app.post('/queue', async (req, res) => {
   if (!track || !track.uri) {
     return res.status(400).json({ message: 'Song URI is required' });
   }
-  // try {
-  // await spotifyApi.addToQueue(track.uri);
-  QUEUE.push(track);
-  return res.json({ message: 'Song added to queue', QUEUE });
-  // } catch (error) {
-  //   return res.status(500).json({ message: 'Error adding song to queue', error });
-  // }
+  try {
+    await spotifyApi.addToQueue(track.uri);
+    QUEUE.push(track);
+    return res.json({ message: 'Song added to queue', QUEUE });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: 'Error adding song to queue', error: (error as Error).message || error });
+  }
 });
 
 // Endpoint to get the current queue

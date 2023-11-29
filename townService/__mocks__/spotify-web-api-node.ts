@@ -3,7 +3,10 @@ const mockSpotifyWebApi = {
   authorizationCodeGrant: jest.fn(),
   setAccessToken: jest.fn(),
   setRefreshToken: jest.fn(),
-  // ... other mocked methods
+  searchTracks: jest.fn(),
+  play: jest.fn(),
+  pause: jest.fn(),
+  addToQueue: jest.fn(),
 };
 
 // Mock constructor implementation
