@@ -19,7 +19,7 @@ import { logError } from './Utils';
 
 dotenv.config();
 // Create the server instances
-const app = Express();
+export const app = Express();
 app.use(CORS());
 const server = http.createServer(app);
 const socketServer = new SocketServer<ClientToServerEvents, ServerToClientEvents>(server, {
@@ -52,13 +52,6 @@ app.use('/docs', swaggerUi.serve, async (_req: Express.Request, res: Express.Res
 
 // Register the TownsController routes with the express server
 RegisterRoutes(app);
-
-// app.use((req, res, next) => {
-//   res.setHeader('Access-Control-Allow-Origin', 'http://localhost:8081');
-//   res.setHeader('Access-Control-Allow-Methods', 'POST, GET, PUT');
-//   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-//   next();
-// });
 
 // Add a middleware for Express to handle errors
 app.use(
@@ -101,9 +94,7 @@ const refreshAccessToken = async () => {
 
 // Authorization route
 app.get('/authorize', async (req, res) => {
-  // console.log('in the backend authorized', Object.keys(req.query));
   const { code } = req.query;
-  // console.log(code);
   if (!code) {
     return res.status(400).send('Code is required');
   }
@@ -112,7 +103,6 @@ app.get('/authorize', async (req, res) => {
   }
   try {
     const data = await spotifyApi.authorizationCodeGrant(code);
-    // console.log(data);
     spotifyApi.setAccessToken(data.body.access_token);
     spotifyApi.setRefreshToken(data.body.refresh_token);
     // Schedule the next refresh
@@ -124,7 +114,7 @@ app.get('/authorize', async (req, res) => {
       expires_in: data.body.expires_in,
     });
   } catch (error) {
-    // console.error('Error during authorization:', error);
+    console.error('Error during authorization:', error);
     return res.status(500).json({ message: 'Authorization failed', error });
   }
 });
