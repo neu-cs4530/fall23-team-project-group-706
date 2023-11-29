@@ -2,8 +2,14 @@ jest.mock('axios');
 
 import axios from 'axios';
 import { SpotifyTrack } from '../../../../../../shared/types/CoveyTownSocket';
-import { addSongToQueue, authorizeUser, getQueue, pauseSong, playSong, searchSongs } from './spotifyServices';
-
+import {
+  addSongToQueue,
+  authorizeUser,
+  getQueue,
+  pauseSong,
+  playSong,
+  searchSongs,
+} from './spotifyServices';
 
 describe('authorizeUser', () => {
   it('successfully authorizes the user', async () => {
@@ -26,17 +32,19 @@ describe('authorizeUser', () => {
     });
   });
 
-    it('throws an error when authorization fails', async () => {
-      const errorMessage = 'Authorization failed';
-      (axios.get as jest.Mock).mockRejectedValueOnce(new Error(errorMessage));
-      const code = 'invalid_code';
-      await expect(authorizeUser(code)).rejects.toThrow(errorMessage);
-    });
+  it('throws an error when authorization fails', async () => {
+    const errorMessage = 'Authorization failed';
+    (axios.get as jest.Mock).mockRejectedValueOnce(new Error(errorMessage));
+    const code = 'invalid_code';
+    await expect(authorizeUser(code)).rejects.toThrow(errorMessage);
+  });
 });
 
 describe('searchSongs', () => {
   it('successfully retrieves search results', async () => {
-    const mockSearchResults = { /* ...mock data... */ };
+    const mockSearchResults = {
+      /* ...mock data... */
+    };
     (axios.get as jest.Mock).mockResolvedValueOnce({ data: mockSearchResults });
 
     const response = await searchSongs('query');
@@ -48,7 +56,6 @@ describe('searchSongs', () => {
     await expect(searchSongs('query')).rejects.toThrow('Search failed');
   });
 });
-
 
 describe('playSong', () => {
   it('successfully plays a song', async () => {
@@ -78,17 +85,13 @@ describe('addSongToQueue', () => {
   const mockTrack: SpotifyTrack = {
     uri: 'spotify:track:valid_uri',
     name: 'MockSong',
-    artists: [
-      { id: 'MockArtistID', name: 'MockArtist' }
-    ],
+    artists: [{ id: 'MockArtistID', name: 'MockArtist' }],
     album: {
-      id: "MockAlbumID",
+      id: 'MockAlbumID',
       name: 'MockAlbum',
-      images: [
-        { height: 5, width: 5, url: 'https://example.com/mockalbum.jpg' }
-      ]
+      images: [{ height: 5, width: 5, url: 'https://example.com/mockalbum.jpg' }],
     },
-    id: 'MockID'
+    id: 'MockID',
   };
   it('successfully adds a song to the queue', async () => {
     (axios.post as jest.Mock).mockResolvedValueOnce({});
@@ -119,9 +122,9 @@ describe('getQueue', () => {
         album: {
           id: 'MockAlbumID',
           name: 'MockAlbum1',
-          images: [{ height: 5, width: 5, url: 'https://example.com/mockalbum1.jpg' }]
+          images: [{ height: 5, width: 5, url: 'https://example.com/mockalbum1.jpg' }],
         },
-        id: 'MockID1'
+        id: 'MockID1',
       },
       {
         uri: 'spotify:track:valid_uri2',
@@ -130,10 +133,10 @@ describe('getQueue', () => {
         album: {
           id: 'MockAlbumID',
           name: 'MockAlbum2',
-          images: [{height: 5, width: 5, url: 'https://example.com/mockalbum2.jpg' }]
+          images: [{ height: 5, width: 5, url: 'https://example.com/mockalbum2.jpg' }],
         },
-        id: 'MockID2'
-      }
+        id: 'MockID2',
+      },
     ];
     (axios.get as jest.Mock).mockResolvedValueOnce({ data: mockQueue });
     const response = await getQueue();

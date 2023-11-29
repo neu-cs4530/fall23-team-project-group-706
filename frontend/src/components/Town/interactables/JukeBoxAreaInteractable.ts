@@ -1,7 +1,6 @@
 import Interactable, { KnownInteractableTypes } from '../Interactable';
 
 export default class JukeBoxAreaInteractable extends Interactable {
-
   private _isInteracting = false;
 
   private _labelText?: Phaser.GameObjects.Text;
@@ -17,12 +16,14 @@ export default class JukeBoxAreaInteractable extends Interactable {
       this.name,
       { color: '#FFFFFF', backgroundColor: '#000000' },
     );
-    this._labelText = this.scene.add.text(
-      this.x - this.displayWidth / 2,
-      this.y - this.displayHeight / 2,
-      `Press space to open the jukebox!!!`,
-      { color: '#FFFFFF', backgroundColor: '#000000' },
-    ).setDepth(30);
+    this._labelText = this.scene.add
+      .text(
+        this.x - this.displayWidth / 2,
+        this.y - this.displayHeight / 2,
+        `Press space to open the jukebox!!!`,
+        { color: '#FFFFFF', backgroundColor: '#000000' },
+      )
+      .setDepth(30);
     this._labelText.setVisible(false);
   }
 
@@ -43,12 +44,12 @@ export default class JukeBoxAreaInteractable extends Interactable {
     this._labelText.setY(location.y);
     this._labelText.setVisible(true);
   }
-  
+
   interact(): void {
     this._labelText?.setVisible(false);
     this._isInteracting = true;
   }
-  
+
   getType(): KnownInteractableTypes {
     return 'jukeBoxArea';
   }
