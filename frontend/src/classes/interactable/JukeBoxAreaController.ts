@@ -11,9 +11,9 @@ export type MusicEventTypes = BaseInteractableEventMap & {
 };
 
 /**
- * This class is the base class for all game controllers. It is responsible for managing the
- * state of the game, and for sending commands to the server to update the state of the game.
- * It is also responsible for notifying the UI when the state of the game changes, by emitting events.
+ * This class is the base class for all JukeBox controllers. It is responsible for managing the
+ * state of the JukeBox, and for sending commands to the server to update the state of the Jukebox.
+ * It is also responsible for notifying the UI when the state of the JukeBox changes, by emitting events.
  */
 export default class JukeBoxAreaController extends InteractableAreaController<MusicEventTypes, JukeBoxAreaInteractable> {
   
@@ -43,8 +43,11 @@ export default class JukeBoxAreaController extends InteractableAreaController<Mu
     return this._model.voting;
   }
   
-  // add the emit for updating the players in there
+  // add the emit for updating the queue and voting history in here
   protected _updateFrom(newModel: JukeBoxAreaInteractable): void {  
+    if (newModel.isPlaying != this.isPlaying) {
+      this._model.isPlaying = newModel.isPlaying;
+    }
     const newSongs = newModel.queue ?? [];
     if (!_.isEqual(this.queue.length, newModel.queue.length) ||
     _.xor(newSongs, this._model.queue).length > 0) {
