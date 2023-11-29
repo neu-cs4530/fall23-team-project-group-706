@@ -29,7 +29,7 @@ const socketServer = new SocketServer<ClientToServerEvents, ServerToClientEvents
 export const spotifyApi = new SpotifyWebApi({
   clientId: 'c7352d2289f4409c8f20675c19846d05', // process.env.SPOTIFY_CLIENT_ID || '',
   clientSecret: '4d4a02b8ee564d33963088f2a9a5cbb2', // process.env.SPOTIFY_CLIENT_SECRET || '',
-  redirectUri: 'http://localhost:3000', // 'https://jukebox-oew9.onrender.com/towns',
+  redirectUri: 'https://jukebox-oew9.onrender.com/towns',
 });
 const QUEUE: SpotifyTrack[] = [];
 

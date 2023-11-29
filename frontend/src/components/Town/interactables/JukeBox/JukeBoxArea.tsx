@@ -3,6 +3,8 @@ import {
   Box,
   Button,
   Container,
+  Grid,
+  GridItem,
   Input,
   Modal,
   ModalCloseButton,
@@ -23,6 +25,7 @@ import LoginButton from './LoginButton';
 import { addSongToQueue, authorizeUser, getQueue, searchSongs } from './spotifyServices';
 import SearchSongs from './SearchSongs';
 import Queue from './Queue';
+import QueueVoting from './QueueVoting';
 
 export function JukeBoxArea({ interactableID }: { interactableID: InteractableID }): JSX.Element {
   const townController = useTownController();
@@ -82,22 +85,45 @@ export function JukeBoxArea({ interactableID }: { interactableID: InteractableID
   };
 
   return (
-    <Container>
-      <Box>
+    <Container maxW='container.xl' p={4} bgGradient='linear(to-br, gray.800, black)'>
+      {/* Login and Welcome Text */}
+      <Box mb={6} bg='blue.500' color='white' p={3} borderRadius='md'>
         {!isAuthenticated && <LoginButton />}
-        {isAuthenticated && <Text>Welcome to Your JukeBox!</Text>}
+        {isAuthenticated && (
+          <Text fontSize='xl' mb={4}>
+            Welcome to Your JukeBox!
+          </Text>
+        )}
       </Box>
-      <Input
-        placeholder='Search songs...'
-        value={searchQuery}
-        onChange={e => setSearchQuery(e.target.value)}
-        mb={4}
-      />
-      <Button colorScheme='blue' onClick={handleSearch} mb={4}>
-        Search
-      </Button>
-      <SearchSongs onAddToQueue={handleAddToQueue} songs={songs} />
-      <Queue queue={queue} />
+
+      {/* Main Content Grid */}
+      <Grid templateColumns='1fr 3fr 1fr' gap={6}>
+        <GridItem bg='purple.500' color='white' p={3} borderRadius='md'>
+          {/* Queue Voting Component */}
+          <QueueVoting />
+        </GridItem>
+
+        <GridItem bg='orange.400' color='white' p={3} borderRadius='md'>
+          {/* Search Section and Search Songs Component */}
+          <Box mb={6}>
+            <Input
+              placeholder='Search songs...'
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+              mb={4}
+            />
+            <Button colorScheme='teal' onClick={handleSearch}>
+              Search
+            </Button>
+          </Box>
+          <SearchSongs onAddToQueue={handleAddToQueue} songs={songs} />
+        </GridItem>
+
+        <GridItem bg='red.500' color='white' p={3} borderRadius='md'>
+          {/* Queue Component */}
+          <Queue queue={queue} />
+        </GridItem>
+      </Grid>
     </Container>
   );
 }
