@@ -31,6 +31,7 @@ import Queue from './Queue';
     const [queue, setQueue] = useState<SpotifyTrack[]>([]);
     const [searchQuery, setSearchQuery] = useState('');
     const [triggerUpdate, setTriggerUpdate] = useState(false);
+    const [votingCountdown, setVotingCountdown] = useState(20); // Set the initial countdown time
 
     useEffect(() => {
       const code = new URLSearchParams(window.location.search).get('code');
@@ -47,9 +48,11 @@ import Queue from './Queue';
           console.log('Authorization code found:', code);
           handleAuthentication(code);
       }
+      
     }, []);
 
     useEffect(() => {
+      musicAreaController.addListener('votingUpdated', onVotingUpdated);
       const fetchQueue = async () => {
           try {
               const fetchedQueue = await getQueue();
@@ -59,7 +62,16 @@ import Queue from './Queue';
           }
       };
       fetchQueue();
-    }, [triggerUpdate]);
+      return () => {
+        musicAreaController.removeListener('votingUpdated', onVotingUpdated);
+      };
+    }, [triggerUpdate, musicAreaController]);
+
+
+    const onVotingUpdated = async () => {
+
+    }
+
 
     const handleSearch = async () => {
       try {
@@ -68,7 +80,7 @@ import Queue from './Queue';
       } catch (error) {
           console.error('Error searching for songs:', error);
       }
-  };
+    };
 
     const handleAddToQueue = async (song: SpotifyTrack) => {
       const success = await addSongToQueue(song);
