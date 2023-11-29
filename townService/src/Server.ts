@@ -21,7 +21,7 @@ dotenv.config();
 export const app = Express();
 app.use(CORS());
 const server = http.createServer(app);
-const socketServer = new SocketServer<ClientToServerEvents, ServerToClientEvents>(server, { 
+const socketServer = new SocketServer<ClientToServerEvents, ServerToClientEvents>(server, {
   cors: { origin: 'https://jukebox-oew9.onrender.com/towns' },
 });
 
