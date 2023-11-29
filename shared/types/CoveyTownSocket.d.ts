@@ -61,18 +61,6 @@ export interface Song {
   artists: { name: string }[];
 }
 
-// export interface SearchResponse {
-//   tracks: {
-//       href: string;
-//       items: TrackObjectFull[];
-//       limit: number;
-//       next: string;
-//       offset: number;
-//       previous: string;
-//       total: number;
-//   };
-// }
-
 export interface AuthorizationResponse {
   access_token: string;
   token_type: string;

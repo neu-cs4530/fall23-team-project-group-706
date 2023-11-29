@@ -12,7 +12,7 @@ import { Server as SocketServer } from 'socket.io';
 import SpotifyWebApi from 'spotify-web-api-node';
 import { RegisterRoutes } from '../generated/routes';
 import TownsStore from './lib/TownsStore';
-import { ClientToServerEvents, ServerToClientEvents, Song } from './types/CoveyTownSocket';
+import { ClientToServerEvents, ServerToClientEvents, SpotifyTrack } from './types/CoveyTownSocket';
 import { TownsController } from './town/TownsController';
 import { logError } from './Utils';
 
@@ -25,7 +25,7 @@ const socketServer = new SocketServer<ClientToServerEvents, ServerToClientEvents
   cors: { origin: '*' },
 });
 
-const spotifyApi = new SpotifyWebApi({
+export const spotifyApi = new SpotifyWebApi({
   clientId: 'c7352d2289f4409c8f20675c19846d05', // process.env.SPOTIFY_CLIENT_ID || '',
   clientSecret: '4d4a02b8ee564d33963088f2a9a5cbb2', // process.env.SPOTIFY_CLIENT_SECRET || '',
   redirectUri: 'http://localhost:3000',
@@ -165,23 +165,21 @@ app.post('/pause', async (req, res) => {
   }
 });
 
-const QUEUE: Song[] = [];
+const QUEUE: SpotifyTrack[] = [];
 
 // Add a song to the queue
 app.post('/queue', async (req, res) => {
-  const { id, name, uri, artists } = req.body;
-
-  if (!uri) {
+  const track = req.body;
+  if (!track || !track.uri) {
     return res.status(400).json({ message: 'Song URI is required' });
   }
-
-  try {
-    await spotifyApi.addToQueue(uri);
-    QUEUE.push({ id, name, uri, artists });
-    return res.json({ message: 'Song added to queue', QUEUE });
-  } catch (error) {
-    return res.status(500).json({ message: 'Error adding song to queue', error });
-  }
+  // try {
+  // await spotifyApi.addToQueue(track.uri);
+  QUEUE.push(track);
+  return res.json({ message: 'Song added to queue', QUEUE });
+  // } catch (error) {
+  //   return res.status(500).json({ message: 'Error adding song to queue', error });
+  // }
 });
 
 // Endpoint to get the current queue
