@@ -332,7 +332,6 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
     return ret as GameAreaController<GameState, GameEventTypes>[];
   }
 
-
   public get musicAreas() {
     const ret = this._interactableControllers.filter(
       eachInteractable => eachInteractable instanceof JukeBoxAreaController,
@@ -668,7 +667,7 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
    * throws an error if the game area controller does not exist
    *
    * @param gameArea
-   * @returns
+   * @returns GameAreaController
    */
   public getGameAreaController<GameType extends GameState, EventsType extends GameEventTypes>(
     gameArea: GameArea,
@@ -688,7 +687,7 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
      * throws an error if the music area controller does not exist
      *
      * @param musicArea
-     * @returns
+     * @returns JukeBoxAreaController
      */
   public getMusicAreaController(musicArea: JukeBoxAreaInteractable): JukeBoxAreaController {
     const existingController = this._interactableControllers.find(
@@ -710,6 +709,11 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
     this._socket.emit('interactableUpdate', viewingArea.toInteractableAreaModel());
   }
 
+  /**
+   * Emit a music area update to the townService
+   * @param musicArea The Music Area Controller that is updated and should be emitted
+   *    with the event
+   */
   public emitMusicAreaUpdate(musicArea: JukeBoxAreaController) {
     this._socket.emit('interactableUpdate', musicArea.toInteractableAreaModel());
   }
@@ -818,9 +822,6 @@ export function useInteractableAreaControllerJukebox<T>(interactableAreaID: stri
   }
   return interactableAreaController as unknown as T;
 }
-
-
-
 
 /**
  * A react hook to retrieve the active conversation areas. This hook will re-render any components
