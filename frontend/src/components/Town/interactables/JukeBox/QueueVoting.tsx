@@ -35,23 +35,28 @@ const QueueVoting: React.FC = () => {
       prevSongs.map(song => (song.name === songNme ? { ...song, votes: song.votes + 1 } : song)),
     );
   };
-
+  const itemHeight = 60;
+  const maxH = `${10 * itemHeight}px`;
   return (
-    <Box>
-      <Heading as='h2' size='lg' mb={4}>
+    <Box maxH={maxH} overflowY='auto' p={3}>
+      <Heading as='h2' size='md' mb={4}>
         Vote For Your Fav Song!!!
       </Heading>
       <VStack spacing={4}>
-        <HStack>
+        {/* Input and Submit Button */}
+        <Box w='100%'>
           <Input
             placeholder='Enter a song name'
             value={songName}
             onChange={e => setSongName(e.target.value)}
+            mb={2} // Margin bottom for spacing
           />
-          <Button colorScheme='blue' onClick={handleSongSubmit}>
+          <Button colorScheme='blue' w='full' onClick={handleSongSubmit}>
             Submit Song
           </Button>
-        </HStack>
+        </Box>
+
+        {/* Songs List */}
         {songs
           .sort((a, b) => b.votes - a.votes)
           .map((song, index) => (

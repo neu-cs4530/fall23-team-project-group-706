@@ -11,6 +11,8 @@ import {
   ModalContent,
   ModalHeader,
   Text,
+  VStack,
+  Heading,
 } from '@chakra-ui/react';
 import React, { useCallback, useEffect, useState } from 'react';
 import {
@@ -28,7 +30,6 @@ import Queue from './Queue';
 import QueueVoting from './QueueVoting';
 
 export function JukeBoxArea({ interactableID }: { interactableID: InteractableID }): JSX.Element {
-  const townController = useTownController();
   const musicAreaController =
     useInteractableAreaControllerJukebox<JukeBoxAreaController>(interactableID);
   const [voting, setVoting] = useState(musicAreaController.votingHistory);
@@ -85,7 +86,8 @@ export function JukeBoxArea({ interactableID }: { interactableID: InteractableID
   };
 
   return (
-    <Container maxW='container.xl' p={4} bgGradient='linear(to-br, gray.800, black)'>
+    <Box w='100%' p={4} bgGradient='linear(to-br, black, gray.300)'>
+      {' '}
       {/* Login and Welcome Text */}
       <Box mb={6} bg='blue.500' color='white' p={3} borderRadius='md'>
         {!isAuthenticated && <LoginButton />}
@@ -95,36 +97,61 @@ export function JukeBoxArea({ interactableID }: { interactableID: InteractableID
           </Text>
         )}
       </Box>
-
       {/* Main Content Grid */}
-      <Grid templateColumns='1fr 3fr 1fr' gap={6}>
-        <GridItem bg='purple.500' color='white' p={3} borderRadius='md'>
+      <Grid
+        templateColumns={{
+          base: 'repeat(1, 1fr)',
+          md: 'repeat(3, 1fr)',
+        }}
+        gap={6}
+        overflowX='auto'>
+        <GridItem
+          bgGradient='linear(to-br, purple.500, orange.400)'
+          color='white'
+          p={3}
+          borderRadius='md'>
           {/* Queue Voting Component */}
-          <QueueVoting />
+          <VStack>
+            <QueueVoting />
+          </VStack>
         </GridItem>
 
-        <GridItem bg='orange.400' color='white' p={3} borderRadius='md'>
+        <GridItem
+          bgGradient='linear(to-br, orange.400, red.500)'
+          color='white'
+          p={3}
+          borderRadius='md'>
           {/* Search Section and Search Songs Component */}
-          <Box mb={6}>
-            <Input
-              placeholder='Search songs...'
-              value={searchQuery}
-              onChange={e => setSearchQuery(e.target.value)}
-              mb={4}
-            />
-            <Button colorScheme='teal' onClick={handleSearch}>
-              Search
-            </Button>
-          </Box>
-          <SearchSongs onAddToQueue={handleAddToQueue} songs={songs} />
+          <VStack spacing={4}>
+            <Box>
+              <Heading as='h2' size='md' mb={4}>
+                Search For A Song
+              </Heading>
+              <Input
+                placeholder='Search songs...'
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+              />
+              <Button colorScheme='teal' onClick={handleSearch} mt={2}>
+                Search
+              </Button>
+            </Box>
+            <SearchSongs onAddToQueue={handleAddToQueue} songs={songs} />
+          </VStack>
         </GridItem>
 
-        <GridItem bg='red.500' color='white' p={3} borderRadius='md'>
+        <GridItem
+          bgGradient='linear(to-br, purple.500, red.500, purple.500)'
+          color='white'
+          p={3}
+          borderRadius='md'>
           {/* Queue Component */}
-          <Queue queue={queue} />
+          <VStack>
+            <Queue queue={queue} />
+          </VStack>
         </GridItem>
       </Grid>
-    </Container>
+    </Box>
   );
 }
 
