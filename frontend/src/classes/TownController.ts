@@ -27,7 +27,12 @@ import {
   TownSettingsUpdate,
   ViewingArea as ViewingAreaModel,
 } from '../types/CoveyTownSocket';
-import { isConversationArea, isTicTacToeArea, isViewingArea, isJukeBoxArea } from '../types/TypeUtils';
+import {
+  isConversationArea,
+  isTicTacToeArea,
+  isViewingArea,
+  isJukeBoxArea,
+} from '../types/TypeUtils';
 import ConversationAreaController from './interactable/ConversationAreaController';
 import GameAreaController, { GameEventTypes } from './interactable/GameAreaController';
 import InteractableAreaController, {
@@ -339,7 +344,6 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
     return ret as JukeBoxAreaController[];
   }
 
-
   /**
    * Begin interacting with an interactable object. Emits an event to all listeners.
    * @param interactedObj
@@ -615,7 +619,7 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
             this._interactableControllers.push(
               new TicTacToeAreaController(eachInteractable.id, eachInteractable, this),
             );
-          }  else if (isJukeBoxArea(eachInteractable)) {
+          } else if (isJukeBoxArea(eachInteractable)) {
             this._interactableControllers.push(
               new JukeBoxAreaController(eachInteractable.id, eachInteractable, this),
             );
@@ -683,12 +687,12 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
   }
 
   /**
-     * Retrives the music area controller corresponding to a music area by ID, or
-     * throws an error if the music area controller does not exist
-     *
-     * @param musicArea
-     * @returns JukeBoxAreaController
-     */
+   * Retrives the music area controller corresponding to a music area by ID, or
+   * throws an error if the music area controller does not exist
+   *
+   * @param musicArea
+   * @returns JukeBoxAreaController
+   */
   public getMusicAreaController(musicArea: JukeBoxAreaInteractable): JukeBoxAreaController {
     const existingController = this._interactableControllers.find(
       eachExistingArea => eachExistingArea.id === musicArea.name,
@@ -800,7 +804,6 @@ export function useInteractableAreaController<T>(interactableAreaID: string): T 
   return interactableAreaController as unknown as T;
 }
 
-
 /**
  * A react hook to retrieve an interactable area controller of the Jukebox interactable area
  *
@@ -813,7 +816,7 @@ export function useInteractableAreaController<T>(interactableAreaID: string): T 
  */
 export function useInteractableAreaControllerJukebox<T>(interactableAreaID: string): T {
   const townController = useTownController();
- 
+
   const interactableAreaController = townController.musicAreas.find(
     eachArea => eachArea.id == interactableAreaID,
   );

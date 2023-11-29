@@ -8,7 +8,6 @@ import TownGameScene from './TownGameScene';
 import TicTacToeAreaWrapper from './interactables/TicTacToe/TicTacToeArea';
 import JukeBoxAreaWrapper from './interactables/JukeBox/JukeBoxArea';
 
-
 export default function TownMap(): JSX.Element {
   const coveyTownController = useTownController();
 
@@ -53,7 +52,7 @@ export default function TownMap(): JSX.Element {
       <NewConversationModal />
       <TicTacToeAreaWrapper />
       <JukeBoxAreaWrapper />
-      
+
       <div id='map-container' />
       <div id='social-container'>
         <SocialSidebar />

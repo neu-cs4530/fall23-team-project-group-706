@@ -1,6 +1,5 @@
 /* eslint-disable import/prefer-default-export */
 /* eslint-disable no-console */
-/* eslint-disable import/no-extraneous-dependencies */
 import Express from 'express';
 import * as http from 'http';
 import CORS from 'cors';
@@ -23,14 +22,16 @@ export const app = Express();
 app.use(CORS());
 const server = http.createServer(app);
 const socketServer = new SocketServer<ClientToServerEvents, ServerToClientEvents>(server, {
-  cors: { origin: 'https://jukebox-oew9.onrender.com/towns' },
+  // cors: { origin: 'https://jukebox-oew9.onrender.com/towns' },
+  cors: { origin: '*' },
 });
 
 export const spotifyApi = new SpotifyWebApi({
   clientId: 'c7352d2289f4409c8f20675c19846d05', // process.env.SPOTIFY_CLIENT_ID || '',
   clientSecret: '4d4a02b8ee564d33963088f2a9a5cbb2', // process.env.SPOTIFY_CLIENT_SECRET || '',
-  redirectUri: 'https://jukebox-oew9.onrender.com/towns',
+  redirectUri: 'http://localhost:3000', // 'https://jukebox-oew9.onrender.com/towns',
 });
+const QUEUE: SpotifyTrack[] = [];
 
 // Initialize the towns store with a factory that creates a broadcast emitter for a town
 TownsStore.initializeTownsStore((townID: string) => socketServer.to(townID));
@@ -159,8 +160,6 @@ app.post('/pause', async (req, res) => {
       .json({ message: 'Error pausing playback', error: (error as Error).message || error });
   }
 });
-
-const QUEUE: SpotifyTrack[] = [];
 
 // Add a song to the queue
 app.post('/queue', async (req, res) => {
