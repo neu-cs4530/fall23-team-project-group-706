@@ -39,7 +39,8 @@
   "include": [
     "src",
     "generated",
-    "pages"
+    "pages",
+    "__mocks__/**/*"
   ],
   "references": [
     {

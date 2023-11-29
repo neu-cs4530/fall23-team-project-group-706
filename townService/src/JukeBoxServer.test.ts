@@ -1,4 +1,3 @@
-/* eslint-disable import/no-extraneous-dependencies */
 import request from 'supertest';
 import SpotifyWebApi from 'spotify-web-api-node';
 import { app } from './Server';

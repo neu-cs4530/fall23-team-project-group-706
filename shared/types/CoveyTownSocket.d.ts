@@ -17,6 +17,7 @@ export type TownJoinResponse = {
   interactables: TypedInteractable[];
 }
 
+
 export interface SpotifyImage {
   url: string;
   height: number;
@@ -276,7 +277,7 @@ interface InteractableCommandBase {
   type: string;
 }
 
-export type InteractableCommand =  ViewingAreaUpdateCommand | JoinGameCommand | GameMoveCommand<TicTacToeMove> | LeaveGameCommand | JukeBoxAreaCommand;
+export type InteractableCommand =  ViewingAreaUpdateCommand | JoinGameCommand | GameMoveCommand<TicTacToeMove> | LeaveGameCommand | JukeBoxAreaCommand | JukeBoxVotingCommand;
 
 
 export interface ViewingAreaUpdateCommand  {
@@ -300,6 +301,11 @@ export interface GameMoveCommand<MoveType> {
 export interface JukeBoxAreaCommand {
   type: "MusicAreaUpdate";
   update: JukeBoxAreaInteractable;
+}
+
+export interface JukeBoxVotingCommand {
+  type: 'JukeBoxVoting';
+  songuri: string
 }
 
 export type InteractableCommandReturnType<CommandType extends InteractableCommand> = 

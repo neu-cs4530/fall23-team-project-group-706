@@ -73,6 +73,9 @@ export default class JukeBoxMusicArea extends InteractableArea {
       this.updateModel(musicArea.update);
       return {} as InteractableCommandReturnType<CommandType>;
     }
+    if (command.type === 'JukeBoxVoting') {
+      this.votingSong(command.songuri);
+    }
     throw new Error('Method not implemented.');
   }
 
