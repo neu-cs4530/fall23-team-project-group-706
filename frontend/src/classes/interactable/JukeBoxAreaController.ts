@@ -48,6 +48,13 @@ export default class JukeBoxAreaController extends InteractableAreaController<
     return this._model.voting;
   }
 
+  public async makeVoting(songName: string) {
+    await this._townController.sendInteractableCommand(this.id, {
+      type: 'JukeBoxVoting',
+      songuri: songName,
+    });
+  }
+
   // add the emit for updating the queue and voting history in here
   protected _updateFrom(newModel: JukeBoxAreaInteractable): void {
     if (newModel.isPlaying != this.isPlaying) {
