@@ -1,7 +1,7 @@
 import React from 'react';
 import { SpotifyTrack } from '../../../../../../shared/types/CoveyTownSocket';
 import { pauseSong, playSong } from './spotifyServices';
-import { Button, Box, Text, Flex, IconButton } from '@chakra-ui/react';
+import { Button, Box, Text, Flex, IconButton, Heading } from '@chakra-ui/react';
 import QueueIcon from './QueueIcon';
 import PlayIcon from './PlayIcon';
 import PauseIcon from './PauseIcon';
