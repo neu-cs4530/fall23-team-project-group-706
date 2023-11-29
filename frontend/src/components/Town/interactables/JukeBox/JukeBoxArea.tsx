@@ -1,6 +1,8 @@
 import {
     Box,
+    Button,
     Container,
+    Input,
     Modal,
     ModalCloseButton,
     ModalContent,
@@ -15,7 +17,7 @@ import {
   import JukeBoxAreaController from '../../../../classes/interactable/JukeBoxAreaController';
   import JukeBoxAreaInteractable from '../JukeBoxAreaInteractable';
   import LoginButton from './LoginButton';
-  import { authorizeUser, getQueue } from './spotifyServices';
+  import { addSongToQueue, authorizeUser, getQueue, searchSongs } from './spotifyServices';
 import SearchSongs from './SearchSongs';
 import Queue from './Queue';
 
@@ -23,9 +25,12 @@ import Queue from './Queue';
   export function JukeBoxArea({ interactableID }: { interactableID: InteractableID }): JSX.Element  {
     const townController = useTownController();
     const musicAreaController = useInteractableAreaControllerJukebox<JukeBoxAreaController>(interactableID);
+    const [voting, setVoting] = useState(musicAreaController.votingHistory);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [songs, setSongs] = useState<SpotifyTrack[]>([]);
     const [queue, setQueue] = useState<SpotifyTrack[]>([]);
-    // const [triggerUpdate, setTriggerUpdate] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [triggerUpdate, setTriggerUpdate] = useState(false);
 
     useEffect(() => {
       const code = new URLSearchParams(window.location.search).get('code');
@@ -54,7 +59,24 @@ import Queue from './Queue';
           }
       };
       fetchQueue();
-  }, []);
+    }, [triggerUpdate]);
+
+    const handleSearch = async () => {
+      try {
+          const results = await searchSongs(searchQuery);
+          setSongs(results);
+      } catch (error) {
+          console.error('Error searching for songs:', error);
+      }
+  };
+
+    const handleAddToQueue = async (song: SpotifyTrack) => {
+      const success = await addSongToQueue(song);
+      if (success) {
+          setTriggerUpdate(prev => !prev); // Toggle to trigger queue update
+          setQueue(prevQueue => [...prevQueue, song]);
+      }
+  };
   
     return (
       <Container>
@@ -62,7 +84,16 @@ import Queue from './Queue';
             {!isAuthenticated && <LoginButton />}
             {isAuthenticated && <Text>Welcome to Your JukeBox!</Text>}
             </Box>
-            <SearchSongs/>
+            <Input
+                placeholder="Search songs..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                mb={4}
+            />
+            <Button colorScheme="blue" onClick={handleSearch} mb={4}>
+                Search
+            </Button>
+            <SearchSongs onAddToQueue={handleAddToQueue} songs={songs}/>
             <Queue queue={queue}/>
       </Container>
     );

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { AuthorizationResponse, SearchResponse, Song } from '../../../../../../shared/types/CoveyTownSocket';
+import { AuthorizationResponse, SearchResponse, Song, SpotifyTrack } from '../../../../../../shared/types/CoveyTownSocket';
 
 // change it 
 const API_BASE_URL = 'http://localhost:8081';
@@ -51,16 +51,25 @@ export const pauseSong = async (): Promise<void> => {
     }
 };
 
-export const addSongToQueue = async (songUri: string): Promise<void> => {
+export const addSongToQueue = async (song: SpotifyTrack): Promise<boolean> => {
     try {
-        await axios.post(`${API_BASE_URL}/queue`, { uri: songUri });
+        await axios.post(`${API_BASE_URL}/queue`, song);
+        return true;
     } catch (error) {
         console.error('Error adding song to queue:', error);
-        throw error;
+        if (axios.isAxiosError(error)) {
+            console.error('Error response:', error.message);
+            if (error.response) {
+                console.error('Error response:', error.response.data);
+            }
+        } else {
+            console.error('Error adding song to queue:', error);
+        }
+        return false;
     }
 };
 
-export const getQueue = async (): Promise<any> => {
+export const getQueue = async (): Promise<SpotifyTrack[]> => {
     try {
         const response = await axios.get(`${API_BASE_URL}/queue`);
         return response.data;
