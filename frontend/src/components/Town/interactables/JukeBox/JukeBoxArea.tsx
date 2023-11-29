@@ -12,7 +12,8 @@ import {
   import React, { useCallback, useEffect, useState } from 'react';
   import {
   useInteractable, useInteractableAreaControllerJukebox } from '../../../../classes/TownController';
-  import useTownController from '../../../../hooks/useTownController';
+import useTownController from '../../../../hooks/useTownController';
+import PlayerController from '../../../../classes/PlayerController';
   import { InteractableID, SpotifyTrack } from '../../../../types/CoveyTownSocket';
   import JukeBoxAreaController from '../../../../classes/interactable/JukeBoxAreaController';
   import JukeBoxAreaInteractable from '../JukeBoxAreaInteractable';
@@ -20,18 +21,20 @@ import {
   import { addSongToQueue, authorizeUser, getQueue, searchSongs } from './spotifyServices';
 import SearchSongs from './SearchSongs';
 import Queue from './Queue';
+import QueueVoting from './queueVoting';
 
 
   export function JukeBoxArea({ interactableID }: { interactableID: InteractableID }): JSX.Element  {
     const townController = useTownController();
     const musicAreaController = useInteractableAreaControllerJukebox<JukeBoxAreaController>(interactableID);
+    const [observers, setObservers] = useState<PlayerController[]>(musicAreaController.occupants);
     const [voting, setVoting] = useState(musicAreaController.votingHistory);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [songs, setSongs] = useState<SpotifyTrack[]>([]);
     const [queue, setQueue] = useState<SpotifyTrack[]>([]);
     const [searchQuery, setSearchQuery] = useState('');
     const [triggerUpdate, setTriggerUpdate] = useState(false);
-    const [votingCountdown, setVotingCountdown] = useState(20); // Set the initial countdown time
+    const [votingCountdown, setVotingCountdown] = useState(10); // Set the initial countdown time
 
     useEffect(() => {
       const code = new URLSearchParams(window.location.search).get('code');
@@ -52,7 +55,11 @@ import Queue from './Queue';
     }, []);
 
     useEffect(() => {
-      musicAreaController.addListener('votingUpdated', onVotingUpdated);
+      musicAreaController.addListener('votingUpdated', updateVote);
+
+      // this would be -1 every second TODO
+      musicAreaController.addListener('votingCountdownUpdated', updateVote);
+      musicAreaController.addListener('votingFinished', submitVote);
       const fetchQueue = async () => {
           try {
               const fetchedQueue = await getQueue();
@@ -63,15 +70,28 @@ import Queue from './Queue';
       };
       fetchQueue();
       return () => {
-        musicAreaController.removeListener('votingUpdated', onVotingUpdated);
+        musicAreaController.removeListener('votingUpdated', updateVote);
+        musicAreaController.removeListener('votingFinished', submitVote);
+        musicAreaController.removeListener('votingCountdownUpdated', handleCountdown);
       };
-    }, [triggerUpdate, musicAreaController]);
+    }, [triggerUpdate, musicAreaController, votingCountdown]);
 
+    const handleCountdown = () => {
+      if (votingCountdown > 0) {
+        setVotingCountdown(votingCountdown-1)
+      }
+    };
 
-    const onVotingUpdated = async () => {
+    const updateVote = () => {
+      setVoting(musicAreaController.votingHistory)
+    };
 
-    }
-
+    const submitVote = async () => {
+      // called when the countdown reaches 0
+      setVoting(musicAreaController.votingHistory)
+      // handleAddToQueue(musicAreaController.getHighestVote);
+      // note: since we need the spotify track, and we only have access to it in front end, we dont rlly use music area controller...?
+   };
 
     const handleSearch = async () => {
       try {
@@ -105,8 +125,9 @@ import Queue from './Queue';
             <Button colorScheme="blue" onClick={handleSearch} mb={4}>
                 Search
             </Button>
-            <SearchSongs onAddToQueue={handleAddToQueue} songs={songs}/>
-            <Queue queue={queue}/>
+        <SearchSongs onAddToQueue={handleAddToQueue} songs={songs} updateVote={updateVote} />
+        <Queue queue={queue} />
+        <QueueVoting voting = {voting}></QueueVoting>
       </Container>
     );
   }

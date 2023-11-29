@@ -6,9 +6,10 @@ import { Input, Button, List, ListItem, Box, Text } from '@chakra-ui/react';
 interface SearchSongsProps {
     onAddToQueue: (songUri: SpotifyTrack) => void;
     songs: SpotifyTrack[];
+    updateVote: any;
 }
 
-const SearchSongs: React.FC<SearchSongsProps> = ({ onAddToQueue, songs }) => {
+const SearchSongs: React.FC<SearchSongsProps> = ({ onAddToQueue, songs , updateVote}) => {
     // const [query, setQuery] = useState<string>('');
     // const [songs, setSongs] = useState<SpotifyTrack[]>([]);
     // const handleSearch = async () => {
@@ -56,6 +57,9 @@ const SearchSongs: React.FC<SearchSongsProps> = ({ onAddToQueue, songs }) => {
                 </Button>
                 <Button colorScheme="blue" onClick={() => handlePlaySong(song.uri)}>
                     Play
+                </Button>
+                <Button colorScheme="blue" onClick={() => updateVote()}>
+                    Vote Song
                 </Button>
             </Box>
         ))}

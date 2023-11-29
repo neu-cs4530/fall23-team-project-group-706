@@ -61,6 +61,10 @@ export default class JukeBoxMusicArea extends InteractableArea {
     this.voting.set(songName, currentVotes + 1);
   }
 
+  public resetVoting() {
+    this.voting = new Map<string, number>();
+  }
+
   public getVotesForSong(songId: string): number {
     return this.voting.get(songId) || 0;
   }
