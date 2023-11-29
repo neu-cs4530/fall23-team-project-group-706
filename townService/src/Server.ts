@@ -22,7 +22,7 @@ export const app = Express();
 app.use(CORS());
 const server = http.createServer(app);
 const socketServer = new SocketServer<ClientToServerEvents, ServerToClientEvents>(server, {
-  cors: { origin: '*' },
+ cors: { origin: 'https://jukebox-gt0r.onrender.com' },
 });
 
 export const spotifyApi = new SpotifyWebApi({
@@ -30,6 +30,7 @@ export const spotifyApi = new SpotifyWebApi({
   clientSecret: process.env.SPOTIFY_CLIENT_SECRET || '',
   redirectUri: 'https://jukebox-oew9.onrender.com/towns',
 });
+
 const QUEUE: SpotifyTrack[] = [];
 
 // Initialize the towns store with a factory that creates a broadcast emitter for a town
