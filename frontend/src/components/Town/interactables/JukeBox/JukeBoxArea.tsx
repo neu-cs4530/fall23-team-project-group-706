@@ -71,7 +71,9 @@ import QueueVoting from './QueueVoting';
     }, [triggerUpdate, voting]);
 
     const updateVote = () => {
-      setVoting(musicAreaController.votingHistory);
+      console.log(voting)
+      setVoting(musicAreaController.votingHistory); /// ???????????????
+      setTriggerUpdate(prev => !prev); // Toggle to trigger vote update
     };
 
     const handleSearch = async () => {

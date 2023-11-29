@@ -58,7 +58,8 @@ const SearchSongs: React.FC<SearchSongsProps> = ({ onAddToQueue, songs , updateV
                 <Button colorScheme="blue" onClick={() => handlePlaySong(song.uri)}>
                     Play
                 </Button>
-                <Button colorScheme="blue" onClick={() => updateVote()}>
+                <Button colorScheme="yellow" onClick={() => updateVote(song)}
+                    >
                     Vote Song
                 </Button>
             </Box>
