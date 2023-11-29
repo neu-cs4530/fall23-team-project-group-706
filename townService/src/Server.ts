@@ -114,7 +114,6 @@ app.get('/authorize', async (req, res) => {
       expires_in: data.body.expires_in,
     });
   } catch (error) {
-    console.error('Error during authorization:', error);
     return res
       .status(500)
       .json({ message: 'Authorization failed', error: (error as Error).message || error });
@@ -143,7 +142,6 @@ app.post('/play', async (req, res) => {
     await spotifyApi.play({ uris: [uri] });
     res.json({ message: 'Playback started' });
   } catch (error) {
-    console.error('Error playing song on backend:', error);
     res
       .status(500)
       .json({ message: 'Error playing song on backend', error: (error as Error).message || error });

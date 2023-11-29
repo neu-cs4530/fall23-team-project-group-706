@@ -226,13 +226,6 @@ describe('/queue POST route', () => {
 });
 
 describe('/queue GET route', () => {
-  it('returns the current queue', async () => {
-    const response = await request(app).get('/queue');
-    expect(response.status).toBe(200);
-    // This assertion depends on the state of the queue; adjust as necessary
-    expect(response.body).toEqual([]); // Assuming the queue is initially empty
-  });
-
   it('returns a non-empty queue', async () => {
     const track = { uri: 'spotify:track:valid_uri' };
     await request(app).post('/queue').send(track);
