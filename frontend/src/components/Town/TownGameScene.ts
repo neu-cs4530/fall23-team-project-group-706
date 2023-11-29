@@ -98,7 +98,8 @@ export default class TownGameScene extends Phaser.Scene {
   }
 
   preload() {
-    this.load.image('Jukebox_32x48', 
+    this.load.image(
+      'Jukebox_32x48',
       this._resourcePathPrefix + '/assets/tilesets/Jukebox_32x48.png',
     );
     this.load.image(
