@@ -21,7 +21,7 @@ import PlayerController from '../../../../classes/PlayerController';
   import { addSongToQueue, authorizeUser, getQueue, searchSongs } from './spotifyServices';
 import SearchSongs from './SearchSongs';
 import Queue from './Queue';
-import QueueVoting from './queueVoting';
+import QueueVoting from './QueueVoting';
 
 
   export function JukeBoxArea({ interactableID }: { interactableID: InteractableID }): JSX.Element  {
@@ -34,7 +34,6 @@ import QueueVoting from './queueVoting';
     const [queue, setQueue] = useState<SpotifyTrack[]>([]);
     const [searchQuery, setSearchQuery] = useState('');
     const [triggerUpdate, setTriggerUpdate] = useState(false);
-    const [votingCountdown, setVotingCountdown] = useState(10); // Set the initial countdown time
 
     useEffect(() => {
       const code = new URLSearchParams(window.location.search).get('code');
@@ -57,9 +56,6 @@ import QueueVoting from './queueVoting';
     useEffect(() => {
       musicAreaController.addListener('votingUpdated', updateVote);
 
-      // this would be -1 every second TODO
-      musicAreaController.addListener('votingCountdownUpdated', updateVote);
-      musicAreaController.addListener('votingFinished', submitVote);
       const fetchQueue = async () => {
           try {
               const fetchedQueue = await getQueue();
@@ -71,27 +67,12 @@ import QueueVoting from './queueVoting';
       fetchQueue();
       return () => {
         musicAreaController.removeListener('votingUpdated', updateVote);
-        musicAreaController.removeListener('votingFinished', submitVote);
-        musicAreaController.removeListener('votingCountdownUpdated', handleCountdown);
       };
-    }, [triggerUpdate, musicAreaController, votingCountdown]);
-
-    const handleCountdown = () => {
-      if (votingCountdown > 0) {
-        setVotingCountdown(votingCountdown-1)
-      }
-    };
+    }, [triggerUpdate, musicAreaController, voting]);
 
     const updateVote = () => {
-      setVoting(musicAreaController.votingHistory)
+      setVoting(musicAreaController.votingHistory);
     };
-
-    const submitVote = async () => {
-      // called when the countdown reaches 0
-      setVoting(musicAreaController.votingHistory)
-      // handleAddToQueue(musicAreaController.getHighestVote);
-      // note: since we need the spotify track, and we only have access to it in front end, we dont rlly use music area controller...?
-   };
 
     const handleSearch = async () => {
       try {

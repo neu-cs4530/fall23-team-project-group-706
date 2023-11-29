@@ -53,18 +53,10 @@ export default class JukeBoxAreaController extends InteractableAreaController<Mu
       // @ts-ignore
       this.emit('songAddedToQueue', newSongs)
     }
-    // These emits handle logic for voting for a song. 
     if (!_.isEqual(newModel.voting, this._model.voting)) {
       this._model.voting = newModel.voting ?? new Map<string, number>();
       this.emit('votingUpdated', newModel.voting)
-      if (this._model.voting.size == 0) {
-        //START TIMER FROM 10 SEC to gather votes
-      }
     }
-    //IF reaches TIMER = 0
-    this.emit('votingFinished', newModel.voting);
-    // NEED A FUNCTION IN MODEL TO RESET VOTING
-
 
     this._model = newModel;
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
