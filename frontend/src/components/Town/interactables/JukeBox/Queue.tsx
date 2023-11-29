@@ -7,14 +7,15 @@ interface QueueProps {
 }
 
 const Queue: React.FC<QueueProps> = ({ queue }) => {
+    console.log('Queue data:', queue); 
     return (
         <Box>
             <Heading as="h2" size="lg" mb={4}>Queue</Heading>
             <List spacing={3}>
-                {queue.map((song, index) => (
-                    <ListItem key={index} display="flex" alignItems="center">
+                {queue.map((track, index) => (
+                    <ListItem key={track.id || index} display="flex" alignItems="center">
                         <Text flex={1}>
-                            {song.name} by {song.artists.map((artist) => artist.name).join(', ')}
+                            {track.name ? track.name : 'Unknown Song'} by {track.artists && track.artists.length > 0 ? track.artists.map(artist => artist.name).join(', ') : 'Unknown Artist'}
                         </Text>
                     </ListItem>
                 ))}
