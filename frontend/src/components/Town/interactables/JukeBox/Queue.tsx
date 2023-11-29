@@ -7,7 +7,6 @@ interface QueueProps {
 }
 
 const Queue: React.FC<QueueProps> = ({ queue }) => {
-    console.log('Queue data:', queue); 
     return (
         <Box>
             <Heading as="h2" size="lg" mb={4}>Queue</Heading>

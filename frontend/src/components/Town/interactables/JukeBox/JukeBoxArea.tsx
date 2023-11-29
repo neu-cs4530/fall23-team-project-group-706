@@ -68,7 +68,7 @@ import QueueVoting from './QueueVoting';
       return () => {
         musicAreaController.removeListener('votingUpdated', updateVote);
       };
-    }, [triggerUpdate, musicAreaController, voting]);
+    }, [triggerUpdate, voting]);
 
     const updateVote = () => {
       setVoting(musicAreaController.votingHistory);
