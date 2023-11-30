@@ -22,7 +22,7 @@ export const app = Express();
 app.use(CORS());
 const server = http.createServer(app);
 const socketServer = new SocketServer<ClientToServerEvents, ServerToClientEvents>(server, {
-  cors: { origin: 'https://jukeboxtownstatic.onrender.com' },
+  cors: { origin: 'https://jukeboxtown.onrender.com' },
 });
 
 export const spotifyApi = new SpotifyWebApi({
