@@ -1,5 +1,3 @@
-/* eslint-disable import/no-extraneous-dependencies */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Button } from '@chakra-ui/react';
 import React from 'react';
 import * as dotenv from 'dotenv';
