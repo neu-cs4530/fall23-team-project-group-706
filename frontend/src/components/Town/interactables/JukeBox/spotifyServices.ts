@@ -7,7 +7,7 @@ import {
 } from '../../../../../../shared/types/CoveyTownSocket';
 
 // change it
-const API_BASE_URL = 'https://jukeboxtown.onrender.com';
+const API_BASE_URL = 'https://jukeboxtown.onrender.com/towns';
 
 export const authorizeUser = async (code: string): Promise<AuthorizationResponse> => {
   try {
