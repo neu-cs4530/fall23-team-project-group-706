@@ -1,6 +1,10 @@
+/* eslint-disable import/no-extraneous-dependencies */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Button } from '@chakra-ui/react';
 import React from 'react';
+import * as dotenv from 'dotenv';
 
+dotenv.config();
 const CLIENT_ID = encodeURIComponent(process.env.SPOTIFY_CLIENT_ID || '');
 const REDIRECT_URI = encodeURIComponent('https://jukeboxtownstatic.onrender.com');
 const SCOPE = encodeURIComponent(
