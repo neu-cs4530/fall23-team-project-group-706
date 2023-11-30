@@ -22,13 +22,13 @@ export const app = Express();
 app.use(CORS());
 const server = http.createServer(app);
 const socketServer = new SocketServer<ClientToServerEvents, ServerToClientEvents>(server, {
-  cors: { origin: 'https://jukebox-gt0r.onrender.com' },
+  cors: { origin: 'https://jukeboxtownstatic.onrender.com' },
 });
 
 export const spotifyApi = new SpotifyWebApi({
   clientId: process.env.SPOTIFY_CLIENT_ID || '',
   clientSecret: process.env.SPOTIFY_CLIENT_SECRET || '',
-  redirectUri: 'https://jukebox-oew9.onrender.com/towns',
+  redirectUri: 'https://jukeboxtownstatic.onrender.com',
 });
 
 const QUEUE: SpotifyTrack[] = [];
