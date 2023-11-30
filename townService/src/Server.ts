@@ -23,14 +23,14 @@ app.use(CORS());
 const server = http.createServer(app);
 
 app.use((req, res, next) => {
-  res.setHeader('Access-Control-Allow-Origin', 'https://jukeboxtown.onrender.com');
+  res.setHeader('Access-Control-Allow-Origin', 'https://jukeboxtownstatic.onrender.com');
   res.setHeader('Access-Control-Allow-Methods', 'POST, GET, PUT');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   next();
 });
 
 const socketServer = new SocketServer<ClientToServerEvents, ServerToClientEvents>(server, {
-  cors: { origin: 'https://jukeboxtown.onrender.com' },
+  cors: { origin: 'https://jukeboxtownstatic.onrender.com' },
 });
 
 export const spotifyApi = new SpotifyWebApi({
