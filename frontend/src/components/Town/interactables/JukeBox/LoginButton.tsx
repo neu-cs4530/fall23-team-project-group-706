@@ -3,7 +3,9 @@ import React from 'react';
 import * as dotenv from 'dotenv';
 
 dotenv.config();
-const CLIENT_ID = encodeURIComponent('c7352d2289f4409c8f20675c19846d05');
+const CLIENT_ID = encodeURIComponent(
+  process.env.NEXT_PUBLIC_SPOTIFY_CLIENT_ID || 'thereisnocodehere',
+);
 const REDIRECT_URI = encodeURIComponent('https://jukeboxtownstatic.onrender.com');
 const SCOPE = encodeURIComponent(
   'user-read-private user-read-email user-modify-playback-state user-read-playback-state',
